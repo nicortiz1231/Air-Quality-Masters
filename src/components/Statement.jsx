@@ -3,38 +3,38 @@ export default function Statement() {
     <section className="statement-section" id="about">
       <div className="statement-grid">
         <div className="statement-kicker">
-          <span>Built for South Florida</span>
+          <span>Why Air Quality Masters</span>
         </div>
 
         <p className="statement-copy">
-          Your HVAC system should disappear into the background of your life —
-          quiet, dependable and always doing its job. We bring the technical
-          discipline needed to make that happen.
+          HVAC service is built on trust. We believe customers should understand
+          what their system needs, what the work involves, and who they are inviting
+          into their property.
         </p>
       </div>
 
       <div className="proof-grid">
         <div className="proof-card proof-card-large">
-          <span className="proof-index">A</span>
+          <span className="proof-index">01</span>
           <div>
             <strong>24/7</strong>
-            <p>Emergency support when comfort cannot wait.</p>
+            <p>Team support for heating and cooling needs that cannot wait.</p>
           </div>
         </div>
 
         <div className="proof-card">
-          <span className="proof-index">B</span>
+          <span className="proof-index">02</span>
           <div>
             <strong>25+</strong>
-            <p>Years of company experience shown on the current brand site.</p>
+            <p>Years of experience currently presented by Air Quality Masters.</p>
           </div>
         </div>
 
         <div className="proof-card">
-          <span className="proof-index">C</span>
+          <span className="proof-index">03</span>
           <div>
             <strong>FL</strong>
-            <p>Local service centered on South Florida properties.</p>
+            <p>South Florida service with an Oakland Park business location.</p>
           </div>
         </div>
       </div>

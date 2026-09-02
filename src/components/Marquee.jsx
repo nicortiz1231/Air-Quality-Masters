@@ -1,12 +1,12 @@
 export default function Marquee() {
   const items = [
-    "Residential",
-    "Commercial",
-    "24/7 Support",
-    "Repair",
+    "Air Conditioning Repair",
+    "Commercial HVAC",
+    "Preventative Maintenance",
+    "Indoor Air Quality",
     "Installation",
-    "Air Quality",
-    "Maintenance"
+    "Ventilation",
+    "24/7 Support"
   ];
 
   return (
@@ -15,7 +15,7 @@ export default function Marquee() {
         {[...items, ...items].map((item, index) => (
           <span key={`${item}-${index}`}>
             {item}
-            <i>✦</i>
+            <i>•</i>
           </span>
         ))}
       </div>

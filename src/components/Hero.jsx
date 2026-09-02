@@ -1,52 +1,48 @@
-import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
 
 export default function Hero() {
   return (
     <section className="hero" id="top">
-      <div className="hero-orb hero-orb-a" />
-      <div className="hero-orb hero-orb-b" />
+      <div className="hero-image" aria-hidden="true" />
+      <div className="hero-overlay" aria-hidden="true" />
 
-      <div className="hero-topline reveal">
-        <span>South Florida HVAC</span>
-        <span className="hero-status">
-          <i />
-          Available 24/7
-        </span>
+      <div className="hero-topline hero-reveal">
+        <span>South Florida</span>
+        <span>Residential + Commercial HVAC</span>
+        <span>24/7 Team Support</span>
       </div>
 
-      <div className="hero-heading-wrap">
-        <h1 className="hero-heading">
-          <span className="hero-line">
-            <span className="hero-line-inner">Comfort,</span>
-          </span>
-          <span className="hero-line hero-line-offset">
-            <span className="hero-line-inner">engineered.</span>
-          </span>
-        </h1>
+      <div className="hero-layout">
+        <div className="hero-heading">
+          <span className="hero-line"><span>Comfort,</span></span>
+          <span className="hero-line hero-line-indent"><span>mastered.</span></span>
+        </div>
 
-        <p className="hero-intro reveal">
-          Precision heating, cooling and indoor-air solutions for homes and
-          businesses that expect more from their environment.
-        </p>
+        <div className="hero-side hero-reveal">
+          <span className="hero-eyebrow">Air Quality Masters</span>
+          <p>
+            Professional heating, cooling and indoor-air service built around
+            clear recommendations, dependable workmanship and responsive support.
+          </p>
+
+          <div className="hero-buttons">
+            <a className="button button-primary" href="#request">
+              <span>Request Service</span>
+              <i><ArrowUpRight size={17} /></i>
+            </a>
+            <a className="button button-ghost" href="#services">
+              <span>Explore Services</span>
+              <i><ArrowDown size={16} /></i>
+            </a>
+          </div>
+        </div>
       </div>
 
-      <div className="hero-bottom reveal">
-        <a className="primary-button" href="#contact">
-          <span>Request service</span>
-          <span className="button-icon">
-            <ArrowUpRight size={18} />
-          </span>
-        </a>
-
-        <a className="scroll-cue" href="#services">
-          <span>Explore our capabilities</span>
-          <ArrowDownRight size={18} />
-        </a>
+      <div className="hero-bottom hero-reveal">
+        <span>Oakland Park, Florida</span>
+        <span>786-307-9286</span>
+        <span>Scroll to explore</span>
       </div>
-
-      <div className="airflow airflow-1" />
-      <div className="airflow airflow-2" />
-      <div className="airflow airflow-3" />
     </section>
   );
 }

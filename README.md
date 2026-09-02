@@ -1,27 +1,22 @@
-# Air Quality Masters — React Redesign Starter
+# Air Quality Masters V8 — Less Image, More Editorial
 
-A high-end editorial React landing page starter using Vite, GSAP and Lenis.
+This version intentionally reduces image density.
+
+Visual strategy:
+- Hero: full-screen HVAC image
+- Intro: typography + graphic transition, no large photo
+- Services: text-first editorial rows, no image per service
+- Services transition: one large atmospheric commercial HVAC background
+- Process: subtle technical/airflow background only
+- Trust: typography and structured information only
+- Service request: no imagery
+- Footer: no imagery
+
+The intent is to use HVAC imagery as atmosphere and section transition,
+not as a content crutch.
 
 ## Run
-
 ```bash
 npm install
 npm run dev
 ```
-
-## Build
-
-```bash
-npm run build
-```
-
-## Important
-
-The copy and proof points are intentionally conservative. Replace any company metric
-with verified real-world information before launch.
-
-Current business details used from the existing Air Quality Masters site:
-- Phone: 786-307-9286
-- Address: 3405 NW 44 ST Suite #106, Oakland Park, FL 33309
-
-The current site obfuscates its email address, so the starter does not guess one. Add the verified business email later.

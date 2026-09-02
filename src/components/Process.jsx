@@ -1,32 +1,41 @@
 const steps = [
-  ["01", "Diagnose", "We identify the source of the issue before recommending a fix."],
-  ["02", "Explain", "You get a clear plan, transparent next steps and no unnecessary mystery."],
-  ["03", "Execute", "Repair or installation is completed with care for the equipment and property."],
-  ["04", "Verify", "We test performance and leave the system ready for reliable operation."]
+  ["01", "Listen", "Start with what the customer is experiencing and what changed."],
+  ["02", "Inspect", "Evaluate system condition, airflow and operating behavior."],
+  ["03", "Explain", "Make the findings and available options understandable."],
+  ["04", "Resolve", "Complete the appropriate repair, service or installation."],
+  ["05", "Verify", "Confirm system operation before the work is considered finished."]
 ];
 
 export default function Process() {
   return (
-    <section className="section process-section">
-      <div className="section-label">
-        <span>02</span>
-        <span>Our approach</span>
+    <section className="process" id="process">
+      <div className="process-visual" aria-hidden="true">
+        <div className="process-image" />
+        <div className="process-shade" />
       </div>
 
-      <div className="process-heading">
-        <h2>Technical service.<br />Human experience.</h2>
-      </div>
+      <div className="section-shell process-shell">
+        <div className="section-index light" data-reveal>
+          <span>03</span>
+          <span>How we work</span>
+        </div>
 
-      <div className="process-grid">
-        {steps.map(([number, title, copy]) => (
-          <article className="process-card" key={number}>
-            <span>{number}</span>
-            <div>
+        <div className="process-title">
+          <h2 data-reveal>
+            From the first symptom<br />
+            <em>to a working system.</em>
+          </h2>
+        </div>
+
+        <div className="process-steps">
+          {steps.map(([n, title, copy]) => (
+            <article key={n} data-reveal>
+              <span>{n}</span>
               <h3>{title}</h3>
               <p>{copy}</p>
-            </div>
-          </article>
-        ))}
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
