@@ -5,6 +5,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowDown, ArrowUpRight, Phone } from "lucide-react";
 
 import Seo from "../components/Seo.jsx";
+import AirflowField from "../components/visual/AirflowField.jsx";
+import SystemAnatomy from "../components/visual/SystemAnatomy.jsx";
+import ProcessSequence from "../components/visual/ProcessSequence.jsx";
 import TrustBadges from "../components/TrustBadges.jsx";
 import ServiceRequestForm from "../components/ServiceRequestForm.jsx";
 import { localBusinessSchema } from "../lib/seo.js";
@@ -14,14 +17,6 @@ import { featuredAreas, counties } from "../data/serviceAreas.js";
 import { allFaqs } from "../data/faqs.js";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const steps = [
-  ["01", "Listen", "We start with what you're actually experiencing and what changed — that narrows the problem before anyone opens a panel."],
-  ["02", "Inspect", "Pressures, electrical draw, airflow and drainage get measured. Diagnosis is a reading, not a guess."],
-  ["03", "Explain", "You get the cause in plain language, the options, and what each one costs — before any work starts."],
-  ["04", "Resolve", "The approved repair, service or installation is completed, and the property is left the way we found it."],
-  ["05", "Verify", "The system is tested under load and the readings are documented. That's when the job is finished."],
-];
 
 export default function Home() {
   const root = useRef(null);
@@ -73,6 +68,7 @@ export default function Home() {
       <section className="hero">
         <div className="hero-image" aria-hidden="true" />
         <div className="hero-overlay" aria-hidden="true" />
+        <AirflowField className="hero-airflow" density={0.00016} opacity={0.42} />
 
         <div className="hero-topline hero-reveal">
           <span>South Florida</span>
@@ -165,6 +161,23 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <figure className="figure-strip" data-reveal>
+          {[
+            ["/coil-copper-detail.jpg", "Copper refrigerant coil tubing", "01", "Condenser coil and line set"],
+            ["/mechanical-room.jpg", "Air handling equipment in a mechanical room", "02", "Air handler and plenum"],
+            ["/architectural-vents.jpg", "Ceiling ventilation grilles", "03", "Supply registers and duct boots"],
+          ].map(([src, alt, fig, caption]) => (
+            <div className="figure-plate" key={fig}>
+              <div className="figure-plate-media">
+                <img src={src} alt={alt} loading="lazy" />
+              </div>
+              <figcaption>
+                <span>Fig. {fig}</span>
+                {caption}
+              </figcaption>
+            </div>
+          ))}
+        </figure>
       </section>
 
       {/* ── Services ─────────────────────────────────────────────────── */}
@@ -195,6 +208,9 @@ export default function Home() {
                 data-reveal
               >
                 <span className="service-editorial-number">{service.number}</span>
+                <div className="service-editorial-thumb">
+                  <img src={service.image} alt="" loading="lazy" />
+                </div>
                 <div className="service-editorial-main">
                   <h3>{service.title}</h3>
                   <p>{service.summary}</p>
@@ -219,10 +235,37 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── System anatomy ───────────────────────────────────────────── */}
+      <section className="anatomy-section">
+        <AirflowField className="anatomy-airflow" density={0.00007} opacity={0.22} speed={0.4} />
+        <div className="section-shell anatomy-shell">
+          <div className="section-index light" data-reveal>
+            <span>03</span>
+            <span>Anatomy of a system</span>
+          </div>
+
+          <div className="anatomy-head">
+            <h2 data-reveal>
+              Everything that can<br />
+              <em>stop you cooling.</em>
+            </h2>
+            <p data-reveal>
+              A residential split system is eight components and the connections between
+              them. Find the one that matches what your system is doing — most people can
+              narrow it down before they ever pick up the phone.
+            </p>
+          </div>
+
+          <div data-reveal>
+            <SystemAnatomy />
+          </div>
+        </div>
+      </section>
+
       {/* ── Why AQM ──────────────────────────────────────────────────── */}
       <section className="trust section-shell">
         <div className="section-index" data-reveal>
-          <span>03</span>
+          <span>04</span>
           <span>Why {company.shortName}</span>
         </div>
 
@@ -283,7 +326,7 @@ export default function Home() {
 
         <div className="section-shell process-shell">
           <div className="section-index light" data-reveal>
-            <span>04</span>
+            <span>05</span>
             <span>How a service call works</span>
           </div>
 
@@ -294,22 +337,14 @@ export default function Home() {
             </h2>
           </div>
 
-          <div className="process-steps">
-            {steps.map(([n, title, copy]) => (
-              <article key={n} data-reveal>
-                <span>{n}</span>
-                <h3>{title}</h3>
-                <p>{copy}</p>
-              </article>
-            ))}
-          </div>
+          <ProcessSequence />
         </div>
       </section>
 
       {/* ── Service areas ────────────────────────────────────────────── */}
       <section className="areas-teaser section-shell">
         <div className="section-index" data-reveal>
-          <span>05</span>
+          <span>06</span>
           <span>Where we work</span>
         </div>
 
@@ -348,7 +383,7 @@ export default function Home() {
       {/* ── FAQ teaser ───────────────────────────────────────────────── */}
       <section className="faq-teaser section-shell">
         <div className="section-index" data-reveal>
-          <span>06</span>
+          <span>07</span>
           <span>Common questions</span>
         </div>
         <div className="faq-teaser-grid">
@@ -368,7 +403,7 @@ export default function Home() {
       <section className="request" id="request">
         <div className="section-shell request-shell">
           <div className="section-index light" data-reveal>
-            <span>07</span>
+            <span>08</span>
             <span>Request service</span>
           </div>
 

@@ -613,8 +613,8 @@ h1 em, h2 em {
 
 /* ── Trust badges ──────────────────────────────────────────── */
 
-.badges-strip { padding-block: 34px; }
-.badges-strip-spaced { padding-block: 20px 90px; }
+.badges-strip { padding-block: 30px 0; }
+.badges-strip-spaced { padding-block: 20px 76px; }
 
 /* Each badge carries its own border rather than relying on a 1px gap over a
    tinted container. The badge count varies with how much is verified, so any
@@ -642,10 +642,10 @@ h1 em, h2 em {
    HOME — INTRO
    ============================================================ */
 
-.intro { padding-block: clamp(80px, 9vw, 130px); }
+.intro { padding-block: clamp(62px, 6.4vw, 104px); }
 /* max-width in `ch` must live on the element that carries the large
    font-size — on the wrapper it resolves against 16px body text. */
-.intro-headline { padding: 58px 0 60px; }
+.intro-headline { padding: 44px 0 46px; }
 .intro-headline h2 { max-width: 15ch; }
 
 .intro-grid {
@@ -675,9 +675,9 @@ h1 em, h2 em {
    HOME — SERVICES
    ============================================================ */
 
-.services { padding-block: clamp(80px, 9vw, 130px) 0; background: var(--white); }
+.services { padding-block: clamp(62px, 6.4vw, 104px) 0; background: var(--white); }
 .services-heading {
-  padding: 56px 0 68px;
+  padding: 42px 0 52px;
   display: grid;
   grid-template-columns: minmax(0,1fr) minmax(260px,.44fr);
   gap: 60px;
@@ -772,9 +772,9 @@ h1 em, h2 em {
    HOME — TRUST
    ============================================================ */
 
-.trust { padding-block: clamp(80px, 9vw, 130px); }
+.trust { padding-block: clamp(62px, 6.4vw, 104px); }
 .trust-layout {
-  padding: 56px 0 62px;
+  padding: 42px 0 48px;
   display: grid;
   grid-template-columns: minmax(0,1fr) minmax(280px,.62fr);
   gap: clamp(40px, 6vw, 100px);
@@ -806,12 +806,13 @@ h1 em, h2 em {
 
 .process {
   position: relative;
-  overflow: hidden;
-  padding-block: clamp(80px, 9vw, 130px);
+  /* No overflow:hidden here — it would break position:sticky in the process
+     sequence. The parallax background clips itself instead. */
+  padding-block: clamp(62px, 6.4vw, 104px);
   background: var(--ink);
   color: #fff;
 }
-.process-visual { position: absolute; inset: 0; }
+.process-visual { position: absolute; inset: 0; overflow: hidden; }
 .process-image {
   position: absolute; inset: -3%;
   background: url("/airflow-detail.jpg") center / cover no-repeat;
@@ -822,36 +823,17 @@ h1 em, h2 em {
   background: linear-gradient(180deg, rgba(11,26,34,.9), rgba(11,26,34,.97));
 }
 .process-shell { position: relative; z-index: 2; }
-.process-title { padding: 56px 0 64px; }
+.process-title { padding: 42px 0 50px; }
 .process-title h2 { color: #fff; }
 
-.process-steps {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 1px;
-  background: var(--line-dark);
-  border-top: 1px solid var(--line-dark);
-  border-left: 1px solid var(--line-dark);
-}
-.process-steps article { padding: 30px 26px 38px; background: var(--ink); }
-.process-steps article > span {
-  display: block;
-  margin-bottom: 26px;
-  color: var(--cold-soft);
-  font-size: 14px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-.process-steps h3 { font-size: 21px; font-weight: 600; letter-spacing: -.02em; }
-.process-steps p { margin-top: 11px; color: var(--on-dark-soft); font-size: 15px; line-height: 1.55; }
 
 /* ============================================================
    HOME — AREAS + FAQ TEASERS
    ============================================================ */
 
-.areas-teaser { padding-block: clamp(80px, 9vw, 130px); }
+.areas-teaser { padding-block: clamp(62px, 6.4vw, 104px); }
 .areas-teaser-layout {
-  padding-top: 56px;
+  padding-top: 42px;
   display: grid;
   grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr);
   gap: clamp(44px, 6vw, 100px);
@@ -899,9 +881,9 @@ h1 em, h2 em {
 }
 .areas-teaser-more a:hover { background: var(--cold); color: #fff; }
 
-.faq-teaser { padding-block: 0 clamp(80px, 9vw, 130px); }
+.faq-teaser { padding-block: 0 clamp(62px, 6.4vw, 104px); }
 .faq-teaser-grid {
-  padding: 50px 0 34px;
+  padding: 40px 0 30px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
   gap: 40px 46px;
@@ -914,12 +896,12 @@ h1 em, h2 em {
    ============================================================ */
 
 .request {
-  padding-block: clamp(80px, 9vw, 130px);
+  padding-block: clamp(62px, 6.4vw, 104px);
   background: var(--ink-2);
   color: #fff;
 }
 .request-grid {
-  padding-top: 54px;
+  padding-top: 42px;
   display: grid;
   grid-template-columns: minmax(0,.82fr) minmax(0,1.18fr);
   gap: clamp(44px, 6vw, 96px);
@@ -1071,7 +1053,8 @@ h1 em, h2 em {
 .form-fineprint { color: var(--on-dark-mute); font-size: 13px; line-height: 1.5; }
 
 .form-panel {
-  padding: 44px 38px;
+  max-width: 620px;
+  padding: 40px 34px;
   display: grid;
   justify-items: start;
   gap: 14px;
@@ -1091,7 +1074,7 @@ h1 em, h2 em {
    ============================================================ */
 
 .footer {
-  padding-block: clamp(70px, 8vw, 110px) 46px;
+  padding-block: clamp(58px, 6vw, 92px) 46px;
   background: var(--ink);
   color: #fff;
 }
@@ -1332,7 +1315,7 @@ h1 em, h2 em {
 .about-statement-copy .lead { color: var(--text); }
 
 .credentials {
-  padding-block: clamp(70px, 8vw, 110px);
+  padding-block: clamp(58px, 6vw, 92px);
   background: var(--ink);
   color: #fff;
 }
@@ -1381,7 +1364,7 @@ h1 em, h2 em {
   line-height: 1.6;
 }
 
-.standards-section { padding-block: clamp(70px, 8vw, 110px); }
+.standards-section { padding-block: clamp(58px, 6vw, 92px); }
 .standards-top {
   padding: 50px 0 56px;
   display: grid;
@@ -1709,4 +1692,508 @@ h1 em, h2 em {
   .nav, .drawer, .call-bar, .skip-link, .cta-band { display: none !important; }
   body { background: #fff; padding-bottom: 0; }
   [data-reveal] { opacity: 1 !important; transform: none !important; }
+}
+
+/* ============================================================
+   VISUAL SYSTEM — "you can't see air"
+   ============================================================ */
+
+.airflow-field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* Film grain. A single tiled SVG turbulence tile, fixed to the viewport so it
+   reads as a property of the screen rather than of the content. */
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: .28;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+@media (prefers-reduced-motion: reduce) { .grain { opacity: .18; } }
+
+/* ── Anatomy diagram ───────────────────────────────────────── */
+
+.anatomy { color: #fff; }
+
+.anatomy-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(290px, .4fr);
+  gap: clamp(30px, 4vw, 64px);
+  align-items: start;
+}
+
+.anatomy-canvas {
+  position: relative;
+  aspect-ratio: 1200 / 640;
+  border: 1px solid var(--line-dark);
+  background:
+    radial-gradient(120% 90% at 30% 10%, rgba(29,106,143,.16), transparent 60%),
+    rgba(255,255,255,.015);
+}
+.anatomy-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--cold-soft);       /* drives the coil hatch + flow arrows */
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.anatomy-structure line,
+.anatomy-structure path { stroke: rgba(255,255,255,.24); stroke-width: 1.5; }
+.anatomy-note {
+  fill: rgba(255,255,255,.36);
+  font-family: Archivo, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-anchor: middle;
+  stroke: none;
+}
+.anatomy-note-end { text-anchor: end; }
+
+/* Every part dims when another is selected — the diagram always answers
+   "which one am I looking at" without needing a caption. */
+.anatomy-svg .part { opacity: .55; transition: opacity .4s var(--ease); }
+.anatomy-svg .part.is-active { opacity: 1; }
+
+.part .body       { fill: rgba(255,255,255,.04); stroke: rgba(160,200,224,.92); stroke-width: 1.7; }
+.part .pad        { stroke: rgba(255,255,255,.28); stroke-width: 1.4; }
+.part .hatch      { color: rgba(160,200,224,.7); stroke: none; }
+.part .pipe       { stroke: rgba(160,200,224,.85); stroke-width: 2.2; }
+.part .pipe-suction { stroke: rgba(160,200,224,.42); stroke-width: 5.5; }
+.part .duct       { fill: rgba(160,200,224,.08); stroke: rgba(160,200,224,.82); stroke-width: 1.6; }
+.part .register   { fill: rgba(160,200,224,.7); stroke: none; }
+.part .coil-a     { stroke: rgba(160,200,224,.9); stroke-width: 2; }
+.part .detail     { stroke: rgba(160,200,224,.7); stroke-width: 1.4; }
+.part .detail-strong { stroke: rgba(160,200,224,.9); stroke-width: 1.8; }
+.part .flowline   { color: rgba(160,200,224,.5); }
+.part .flowline line { stroke: rgba(160,200,224,.65); stroke-width: 1.4; }
+
+/* Active state uses a cold near-white, never --signal: the hot accent stays
+   reserved for actions so it keeps meaning "act" everywhere on the site. */
+.part.is-active .body,
+.part.is-active .duct,
+.part.is-active .pipe,
+.part.is-active .coil-a,
+.part.is-active .detail,
+.part.is-active .detail-strong { stroke: #eaf4fa; }
+.part.is-active .pipe-suction { stroke: rgba(234,244,250,.45); }
+.part.is-active .hatch { color: rgba(234,244,250,.8); }
+.part.is-active .register { fill: #eaf4fa; }
+.part.is-active .body { fill: rgba(234,244,250,.07); }
+
+/* ── Hotspots ──────────────────────────────────────────────── */
+
+.anatomy-hotspots { position: absolute; inset: 0; }
+.hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border: 1px solid rgba(160,200,224,.55);
+  border-radius: 50%;
+  background: rgba(11,26,34,.82);
+  backdrop-filter: blur(4px);
+  color: var(--cold-soft);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background .28s var(--ease), color .28s var(--ease),
+              border-color .28s var(--ease), transform .28s var(--ease);
+}
+.hotspot::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid rgba(160,200,224,.3);
+  opacity: 0;
+  animation: ping 3.4s var(--ease) infinite;
+}
+.hotspot:hover, .hotspot:focus-visible { border-color: #eaf4fa; color: #fff; }
+.hotspot.is-active {
+  background: #eaf4fa;
+  border-color: #eaf4fa;
+  color: var(--ink);
+  transform: translate(-50%, -50%) scale(1.14);
+}
+.hotspot.is-active::before { animation: none; opacity: 0; }
+
+@keyframes ping {
+  0%   { opacity: .9; transform: scale(.86); }
+  70%  { opacity: 0;  transform: scale(1.45); }
+  100% { opacity: 0;  transform: scale(1.45); }
+}
+@media (prefers-reduced-motion: reduce) { .hotspot::before { animation: none; } }
+
+/* ── Detail panel ──────────────────────────────────────────── */
+
+.anatomy-detail {
+  padding-left: clamp(20px, 2vw, 30px);
+  border-left: 1px solid var(--line-dark);
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+.anatomy-detail-index {
+  color: var(--cold-soft);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+}
+.anatomy-detail h3 {
+  font-size: clamp(24px, 2.4vw, 33px);
+  font-weight: 600;
+  letter-spacing: -.028em;
+  line-height: 1.05;
+  color: #fff;
+}
+.anatomy-detail-block { display: grid; gap: 7px; }
+.anatomy-detail-block > span {
+  color: var(--on-dark-mute);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.anatomy-detail-block p {
+  color: var(--on-dark-soft);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+.anatomy-detail-link {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgba(255,255,255,.35);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  transition: gap .25s var(--ease), border-color .25s var(--ease);
+}
+.anatomy-detail-link:hover { gap: 13px; border-color: #fff; }
+
+/* ── Index row ─────────────────────────────────────────────── */
+
+.anatomy-index {
+  margin-top: 26px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.anatomy-index button {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 9px 15px;
+  border: 1px solid var(--line-dark);
+  background: transparent;
+  color: var(--on-dark-soft);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease);
+}
+.anatomy-index button b {
+  color: var(--cold-soft);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.anatomy-index button:hover { border-color: rgba(255,255,255,.4); color: #fff; }
+.anatomy-index button.is-active { background: #eaf4fa; border-color: #eaf4fa; color: var(--ink); }
+.anatomy-index button.is-active b { color: var(--ink-3); }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 1050px) {
+  .anatomy-stage { grid-template-columns: 1fr; gap: 28px; }
+  .anatomy-detail { padding-left: 0; padding-top: 22px; border-left: 0; border-top: 1px solid var(--line-dark); }
+  .hotspot { width: 30px; height: 30px; font-size: 10.5px; }
+}
+@media (max-width: 620px) {
+  /* The drawing stops being legible below this, so it scrolls at a usable
+     width rather than shrinking into illegibility. */
+  .anatomy-canvas { width: 640px; }
+  .anatomy-scroll { overflow-x: auto; overscroll-behavior-x: contain; padding-bottom: 10px; }
+  .anatomy-index button { font-size: 12.5px; padding: 8px 12px; }
+}
+
+/* ── Anatomy section shell ─────────────────────────────────── */
+
+.anatomy-section {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(62px, 6.4vw, 104px);
+  background: var(--ink);
+  color: #fff;
+}
+.anatomy-airflow { opacity: .6; }
+.anatomy-shell { position: relative; z-index: 2; }
+
+.anatomy-head {
+  padding: 40px 0 44px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, .5fr);
+  gap: clamp(30px, 5vw, 80px);
+  align-items: end;
+}
+.anatomy-head h2 { color: #fff; }
+.anatomy-head p { color: var(--on-dark-soft); max-width: 46ch; font-size: 16.5px; }
+
+/* ── Hero airflow ──────────────────────────────────────────── */
+
+.hero-airflow { z-index: 1; }
+
+/* ── Route transition ──────────────────────────────────────── */
+
+.route-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  pointer-events: none;   /* never blocks a tap on the call button */
+  overflow: hidden;
+}
+.route-curtain > span {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--ink);
+  transform-origin: top;
+  animation: curtain-lift .62s cubic-bezier(.76,0,.24,1) forwards;
+}
+@keyframes curtain-lift {
+  0%   { transform: scaleY(1); }
+  100% { transform: scaleY(0); }
+}
+
+.route-enter { animation: route-in .5s .12s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes route-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-curtain { display: none; }
+  .route-enter { animation: none; }
+}
+
+/* Circulation paths — the conditioned air looping back to the return.
+   Deliberately outside the highlight/dim system: it is the subject of the
+   drawing rather than one more labelled component. */
+.circulation path {
+  fill: none;
+  stroke: rgba(160,200,224,.34);
+  stroke-width: 1.4;
+  stroke-dasharray: 3 10;
+  stroke-linecap: round;
+  animation: circulate 3.4s linear infinite;
+}
+.circulation path:nth-child(2) { animation-duration: 4.1s; }
+.circulation path:nth-child(3) { animation-duration: 4.8s; }
+@keyframes circulate { to { stroke-dashoffset: -130; } }
+@media (prefers-reduced-motion: reduce) { .circulation path { animation: none; } }
+
+.anatomy-labels text { fill: rgba(160,200,224,.5); stroke: none; }
+
+/* ── Plate figures ─────────────────────────────────────────── */
+
+.figure-strip {
+  margin: clamp(44px, 4.6vw, 72px) 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 30px);
+}
+.figure-plate-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--ink);
+}
+.figure-plate-media img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .9s var(--ease), filter .6s var(--ease);
+}
+.figure-plate:hover .figure-plate-media img { transform: scale(1.05); }
+.figure-plate figcaption {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  color: var(--text-mute);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.figure-plate figcaption span {
+  flex: none;
+  color: var(--cold);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Service row thumbnails ────────────────────────────────── */
+
+.service-editorial-row {
+  grid-template-columns: 44px 132px minmax(0, 1.35fr) minmax(0, .8fr) 46px;
+}
+.service-editorial-thumb {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--ink);
+}
+.service-editorial-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: saturate(.75) contrast(1.04);
+  transition: transform .8s var(--ease), filter .5s var(--ease);
+}
+.service-editorial-row:hover .service-editorial-thumb img {
+  transform: scale(1.07);
+  filter: saturate(1) contrast(1.04);
+}
+
+@media (max-width: 1180px) {
+  .figure-strip { gap: 14px; }
+}
+@media (max-width: 900px) {
+  .figure-strip { grid-template-columns: 1fr 1fr; }
+  .figure-strip .figure-plate:last-child { display: none; }
+  .service-editorial-row {
+    grid-template-columns: 92px 1fr auto;
+    gap: 14px 16px;
+  }
+  .service-editorial-thumb { grid-row: 1 / span 2; grid-column: 1; }
+  .service-editorial-number { grid-column: 2; }
+  .service-editorial-main { grid-column: 2 / -1; grid-row: 2; }
+  .service-editorial-tags { grid-column: 1 / -1; }
+  .service-editorial-link { grid-column: 3; grid-row: 1; }
+}
+@media (max-width: 620px) {
+  .figure-strip { grid-template-columns: 1fr; }
+  .figure-strip .figure-plate:last-child { display: block; }
+}
+
+/* ── Process sequence (sticky scroll) ──────────────────────── */
+
+.process-sequence {
+  display: grid;
+  grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+  gap: clamp(36px, 5vw, 90px);
+  align-items: start;
+}
+
+.process-visual-col {
+  position: sticky;
+  top: calc(var(--bar) + 40px);
+  display: grid;
+  gap: 18px;
+}
+
+.process-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #06131c;
+  border: 1px solid var(--line-dark);
+}
+.process-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.06);
+  filter: saturate(.7) contrast(1.05);
+  transition: opacity .75s var(--ease), transform 1.2s var(--ease);
+}
+.process-media img.is-active { opacity: 1; transform: scale(1); }
+.process-media-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(160,200,224,.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(160,200,224,.09) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mix-blend-mode: overlay;
+}
+
+.process-progress { display: flex; gap: 5px; }
+.process-progress span {
+  flex: 1;
+  height: 2px;
+  background: rgba(255,255,255,.16);
+  transition: background .45s var(--ease);
+}
+.process-progress span.is-done { background: var(--cold-soft); }
+
+.process-counter {
+  color: var(--on-dark-mute);
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.process-counter b { color: #fff; font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
+
+.process-steps-col { display: grid; }
+.process-steps-col li {
+  padding: clamp(40px, 6vw, 74px) 0;
+  border-bottom: 1px solid var(--line-dark);
+  opacity: .4;
+  transition: opacity .5s var(--ease);
+}
+.process-steps-col li:first-child { padding-top: 0; }
+.process-steps-col li:last-child { border-bottom: 0; }
+.process-steps-col li.is-active { opacity: 1; }
+
+.process-step-n {
+  display: block;
+  margin-bottom: 14px;
+  color: var(--cold-soft);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.process-steps-col h3 {
+  font-size: clamp(28px, 3.2vw, 46px);
+  font-weight: 600;
+  letter-spacing: -.032em;
+  line-height: 1;
+  color: #fff;
+}
+.process-steps-col p {
+  margin-top: 14px;
+  max-width: 46ch;
+  color: var(--on-dark-soft);
+  font-size: 16.5px;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .process-sequence { grid-template-columns: 1fr; gap: 26px; }
+  /* Sticky media on a phone eats the viewport, so it becomes a normal block. */
+  .process-visual-col { position: static; }
+  .process-media { aspect-ratio: 16 / 10; }
+  .process-steps-col li { padding: 30px 0; opacity: 1; }
 }

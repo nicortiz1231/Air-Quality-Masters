@@ -60,34 +60,52 @@ success → confirmation panel.
 
 ---
 
-## 3. Replace the photography — STRONGLY RECOMMENDED
+## 3. Replace the photography — HIGHEST VISUAL IMPACT
 
-Every image in `public/` is **760×334**. They are used full-bleed at up to
-1500px wide, so they are visibly soft on any modern display. Low-resolution
-imagery reads as "cheap template" faster than almost anything else on a page.
+Every image in `public/` is **760×334**. That single letterbox aspect ratio is
+the main thing holding the design back: you cannot crop a portrait, a square or
+a tall editorial column out of it, so imagery can only ever appear as thin
+bands. The layout now works around this by using each photo small (thumbnails,
+plate figures, the process panel) where 760px reads sharp — but with real
+assets the same layouts get substantially better.
 
-Replace with real photos of AQM's own work at **2400px wide or larger**, same
-filenames so no code changes are needed:
+**Both Unsplash and Pexels block automated download (401/403), and CC0 HVAC
+imagery is thin and visually incoherent** — so this is a 10-minute manual job
+that produces far better results than anything scriptable.
 
-| File | Used for |
-| --- | --- |
-| `residential-condensers.jpg` | Home hero (most important), AC repair page |
-| `commercial-rooftop.jpg` | Services mid-page band, commercial page |
-| `airflow-detail.jpg` | Process section background, air quality page |
-| `mechanical-room.jpg` | Installation page |
-| `coil-copper-detail.jpg` | Maintenance page |
-| `architectural-vents.jpg` | Duct cleaning page |
+### What to get
 
-Best sources, in order: real job-site photos, branded vehicles, actual installs.
-Even phone photos of real work beat stock — and they are the clearest possible
-signal that this is not a template.
+Go to [unsplash.com](https://unsplash.com) or [pexels.com](https://pexels.com)
+— both are free for commercial use with no attribution required. Download the
+**largest size offered**, and save with these exact filenames into `public/`
+so no code changes are needed:
 
-**Do not add stock photos of people.** The old site's four "team members" were
-Figma placeholder names (Courtny Henry, Marvin McKinney, Brooklyn Simmons,
-Ronald Richards) on stock headshots. The About page deliberately leads with
-verifiable credentials instead, which is both more honest and more persuasive.
+| Filename | Search terms | Aspect wanted | Used by |
+| --- | --- | --- | --- |
+| `residential-condensers.jpg` | "air conditioner unit house", "hvac condenser outdoor" | Wide 16:9+ | Home hero (biggest impact), AC repair page, process step 01 |
+| `commercial-rooftop.jpg` | "rooftop hvac", "commercial air conditioning roof" | Wide 16:9+ | Services band, commercial page, process step 04 |
+| `coil-copper-detail.jpg` | "copper pipe hvac", "refrigeration coil close up" | Square or 4:3 | Plate figure 01, maintenance page, process step 02 |
+| `mechanical-room.jpg` | "air handler unit", "hvac mechanical room" | 4:3 or portrait | Plate figure 02, installation page, process step 03 |
+| `architectural-vents.jpg` | "ceiling air vent", "ventilation grille architecture" | 4:3 | Plate figure 03, duct cleaning page, process step 05 |
+| `airflow-detail.jpg` | "air vent macro", "ventilation detail" | Wide | Process section background |
 
----
+Two more worth adding if you find good ones — say the word and I will build
+sections that use them:
+
+| Filename | Search terms | Would enable |
+| --- | --- | --- |
+| `technician-gauges.jpg` | "hvac manifold gauges", "technician tools hands" | A "diagnosis first" proof section — hands and instruments, no faces |
+| `duct-attic.jpg` | "flexible duct attic", "ductwork insulation" | Illustrating the attic duct-loss story the copy already tells |
+
+**Selection guidance.** Pick images that share a look — cool/neutral colour
+grading, similar contrast. Visual cohesion matters more than any individual
+photo. Avoid anything with a visible face or a posed "friendly technician"; the
+whole point of this rebuild is to not look like a template, and stock people
+are the fastest way back to one.
+
+**Real AQM photos beat all of this.** Job sites, branded vehicles, actual
+installs, the crew's hands at work — even phone photos. That is the single
+strongest signal that this is a real business.
 
 ## 4. Confirm the service areas — REQUIRED
 

@@ -86,6 +86,41 @@ replaced shipped lines like "Years of experience currently presented by Air
 Quality Masters" and "The current AQM website advertises 24/7 team support" —
 build notes that made it to production and undercut every claim on the page.
 
+## Visual system
+
+The site's design concept is that an HVAC company sells something invisible, so
+the signature visuals make air visible. Three coded pieces, all in
+`src/components/visual/`:
+
+- `AirflowField.jsx` — canvas flow field (value-noise + fBm advecting particles
+  that leave trails). DPR-capped, paused offscreen via IntersectionObserver,
+  one static frame under reduced motion. Resolution-independent, which is why
+  it carries the hero rather than the 760px photography.
+- `SystemAnatomy.jsx` — interactive cutaway of a split system, drawn as a
+  technical section on a blueprint grid. Content lives in `src/data/anatomy.js`.
+  The SVG is `aria-hidden`; hotspots are real HTML buttons positioned in
+  percentage coordinates off the viewBox, so it is keyboard-operable.
+- `ProcessSequence.jsx` — sticky-scroll sequence, image column pinned while
+  steps scroll past.
+
+Two bugs already fixed here; do not reintroduce them:
+
+- **`overflow: hidden` on a section breaks `position: sticky` inside it.**
+  `.process` originally clipped its parallax background, which silently killed
+  the sticky process column. The clip lives on `.process-visual` instead.
+- **IntersectionObserver callbacks only carry entries whose state CHANGED.**
+  Picking "nearest the viewport centre" from the callback argument alone
+  chooses wrong. `ProcessSequence` keeps a full visibility Map and decides from
+  every currently-intersecting step.
+
+`window.__lenis` is exposed in dev only. Smooth scroll fights programmatic
+`window.scrollTo`, so scroll-driven behaviour cannot be tested without
+destroying the instance first.
+
+**The hot accent (`--signal`) is for actions only** — call, submit, request.
+The anatomy diagram's active part uses a cold near-white instead, deliberately,
+so the hot colour keeps meaning "act" everywhere on the site.
+
 ## Form
 
 `components/ServiceRequestForm.jsx` posts to Web3Forms via

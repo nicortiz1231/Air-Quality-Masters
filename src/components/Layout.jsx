@@ -5,6 +5,7 @@ import Navigation from "./Navigation.jsx";
 import Footer from "./Footer.jsx";
 import MobileCallBar from "./MobileCallBar.jsx";
 import ScrollToTop from "./ScrollToTop.jsx";
+import RouteTransition from "./RouteTransition.jsx";
 import useReveal from "../hooks/useReveal.js";
 
 export default function Layout() {
@@ -14,6 +15,10 @@ export default function Layout() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const lenis = new Lenis({ duration: 1.05, smoothWheel: true, wheelMultiplier: 0.92 });
+    // Exposed in dev only: smooth scroll fights programmatic window.scrollTo,
+    // which makes scroll-driven behaviour impossible to test without a handle
+    // on the instance.
+    if (import.meta.env.DEV) window.__lenis = lenis;
     let raf;
     const tick = (time) => {
       lenis.raf(time);
@@ -29,10 +34,12 @@ export default function Layout() {
   return (
     <>
       <ScrollToTop />
+      <RouteTransition key={`curtain-${pathname}`} />
       <Navigation />
-      <main id="main">
+      <main id="main" className="route-enter" key={pathname}>
         <Outlet />
       </main>
+      <div className="grain" aria-hidden="true" />
       <Footer />
       <MobileCallBar />
     </>
