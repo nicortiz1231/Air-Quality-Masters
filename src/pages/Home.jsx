@@ -7,7 +7,7 @@ import { ArrowDown, ArrowUpRight, Phone } from "lucide-react";
 import Seo from "../components/Seo.jsx";
 import AirflowField from "../components/visual/AirflowField.jsx";
 import SystemAnatomy from "../components/visual/SystemAnatomy.jsx";
-import ProcessScroller from "../components/visual/ProcessScroller.jsx";
+import ProcessFlow from "../components/visual/ProcessFlow.jsx";
 import ComfortZone from "../components/visual/ComfortZone.jsx";
 import TrustBadges from "../components/TrustBadges.jsx";
 import ServiceRequestForm from "../components/ServiceRequestForm.jsx";
@@ -322,7 +322,7 @@ export default function Home() {
       </section>
 
       {/* ── Process ──────────────────────────────────────────────────── */}
-      <ProcessScroller />
+      <ProcessFlow />
 
       {/* ── Service areas ────────────────────────────────────────────── */}
       <section className="areas-teaser section-shell">
