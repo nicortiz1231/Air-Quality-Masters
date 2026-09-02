@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Air Quality Masters">
+  <rect width="64" height="64" rx="13" fill="#0b1a22"/>
+  <g fill="none" stroke-linecap="round" stroke-width="5.5">
+    <path d="M13 22h24a6.5 6.5 0 1 0-6.5-6.5" stroke="#ffffff"/>
+    <path d="M13 32h30a7 7 0 1 1-7 7" stroke="#8fb9cf"/>
+    <path d="M13 42h17a5.5 5.5 0 1 1-5.5 5.5" stroke="#cf3b26"/>
+  </g>
+</svg>

@@ -1,36 +1,164 @@
-import { Menu, Phone } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { ChevronDown, Menu, Phone, X } from "lucide-react";
+import { company } from "../data/company.js";
+import { services } from "../data/services.js";
+import { featuredAreas } from "../data/serviceAreas.js";
+
+const links = [
+  { to: "/services", label: "Services", children: services.map((s) => ({ to: `/services/${s.slug}`, label: s.title })) },
+  { to: "/service-areas", label: "Service Areas", children: featuredAreas.map((a) => ({ to: `/service-areas/${a.slug}`, label: a.name })) },
+  { to: "/about", label: "About" },
+  { to: "/faq", label: "FAQ" },
+];
 
 export default function Navigation() {
+  const { pathname } = useLocation();
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [openGroup, setOpenGroup] = useState(null);
+  const panelRef = useRef(null);
+
+  // The home hero is a dark full-bleed image, so the bar can float over it.
+  // Every other page starts on paper and needs a solid bar immediately.
+  const overHero = pathname === "/" && !scrolled;
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Close the drawer on navigation.
+  useEffect(() => {
+    setOpen(false);
+    setOpenGroup(null);
+  }, [pathname]);
+
+  // Lock body scroll and wire Escape while the drawer is open.
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", onKey);
+    panelRef.current?.querySelector("a, button")?.focus();
+    return () => {
+      document.body.style.overflow = prev;
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   return (
-    <header className="nav">
-      <a href="#top" className="brand" aria-label="Air Quality Masters home">
-        <span className="brand-monogram">AQM</span>
-        <span className="brand-name">
-          <strong>Air Quality Masters</strong>
-          <small>Heating · Cooling · Air Quality</small>
-        </span>
-      </a>
+    <>
+      <a className="skip-link" href="#main">Skip to content</a>
 
-      <nav className="nav-links" aria-label="Primary navigation">
-        <a href="#services">Services</a>
-        <a href="#about">Company</a>
-        <a href="#process">Our Process</a>
-        <a href="#contact">Contact</a>
-      </nav>
+      <header className={`nav${overHero ? " nav-over-hero" : ""}${scrolled ? " nav-scrolled" : ""}`}>
+        <Link to="/" className="brand" aria-label={`${company.name} — home`}>
+          <span className="brand-monogram" aria-hidden="true">AQM</span>
+          <span className="brand-name">
+            <strong>{company.name}</strong>
+            <small>Heating · Cooling · Air Quality</small>
+          </span>
+        </Link>
 
-      <div className="nav-actions">
-        <a className="nav-phone" href="tel:+17863079286">
-          <Phone size={15} />
-          <span>786-307-9286</span>
-        </a>
-        <a className="nav-request" href="#request">
-          <span>Request Service</span>
-          <i>↗</i>
-        </a>
-        <button type="button" className="menu-button" aria-label="Open menu">
-          <Menu size={18} />
-        </button>
+        <nav className="nav-links" aria-label="Primary">
+          {links.map((link) =>
+            link.children ? (
+              <div className="nav-group" key={link.to}>
+                <NavLink to={link.to} className={({ isActive }) => (isActive ? "is-active" : "")}>
+                  {link.label}
+                  <ChevronDown size={13} aria-hidden="true" />
+                </NavLink>
+                <div className="nav-dropdown" role="menu">
+                  {link.children.map((child) => (
+                    <Link key={child.to} to={child.to} role="menuitem">{child.label}</Link>
+                  ))}
+                  <Link to={link.to} className="nav-dropdown-all" role="menuitem">
+                    View all {link.label.toLowerCase()} →
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <NavLink key={link.to} to={link.to} className={({ isActive }) => (isActive ? "is-active" : "")}>
+                {link.label}
+              </NavLink>
+            )
+          )}
+        </nav>
+
+        <div className="nav-actions">
+          <a className="nav-phone" href={company.phone.href}>
+            <Phone size={15} aria-hidden="true" />
+            <span>{company.phone.display}</span>
+          </a>
+          <Link className="nav-request" to="/contact">
+            <span>Request Service</span>
+            <i aria-hidden="true">↗</i>
+          </Link>
+          <button
+            type="button"
+            className="menu-button"
+            aria-label="Open menu"
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            onClick={() => setOpen(true)}
+          >
+            <Menu size={20} aria-hidden="true" />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile drawer */}
+      <div className={`drawer${open ? " is-open" : ""}`} aria-hidden={!open}>
+        <div className="drawer-scrim" onClick={() => setOpen(false)} />
+        <div className="drawer-panel" id="mobile-menu" ref={panelRef} role="dialog" aria-modal="true" aria-label="Menu">
+          <div className="drawer-head">
+            <span>Menu</span>
+            <button type="button" onClick={() => setOpen(false)} aria-label="Close menu">
+              <X size={20} aria-hidden="true" />
+            </button>
+          </div>
+
+          <nav className="drawer-links" aria-label="Mobile">
+            <Link to="/">Home</Link>
+            {links.map((link) =>
+              link.children ? (
+                <div className="drawer-group" key={link.to}>
+                  <button
+                    type="button"
+                    onClick={() => setOpenGroup(openGroup === link.to ? null : link.to)}
+                    aria-expanded={openGroup === link.to}
+                  >
+                    {link.label}
+                    <ChevronDown size={16} className={openGroup === link.to ? "rot" : ""} aria-hidden="true" />
+                  </button>
+                  {openGroup === link.to && (
+                    <div className="drawer-sub">
+                      <Link to={link.to}>All {link.label.toLowerCase()}</Link>
+                      {link.children.map((c) => (
+                        <Link key={c.to} to={c.to}>{c.label}</Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link key={link.to} to={link.to}>{link.label}</Link>
+              )
+            )}
+            <Link to="/contact">Contact</Link>
+          </nav>
+
+          <div className="drawer-foot">
+            <a className="drawer-call" href={company.phone.href}>
+              <Phone size={17} aria-hidden="true" />
+              {company.phone.display}
+            </a>
+            <Link className="drawer-cta" to="/contact">Request Service</Link>
+          </div>
+        </div>
       </div>
-    </header>
+    </>
   );
 }
