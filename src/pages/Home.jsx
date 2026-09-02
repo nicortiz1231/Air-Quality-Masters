@@ -121,45 +121,47 @@ export default function Home() {
           <span>What we do</span>
         </div>
 
-        <div className="intro-headline">
-          <h2 data-reveal>
-            An air conditioner is not a<br />
-            <em>luxury in this climate.</em>
-          </h2>
-        </div>
-
         <div className="intro-grid">
-          <div className="intro-copy" data-reveal>
-            <p className="lead">
-              South Florida runs its cooling systems close to year-round, and in this
-              climate humidity does more damage to comfort than heat does. A system here
-              is not just holding a temperature — it is pulling several gallons of water
-              a day out of the air, and most comfort complaints trace back to that job
-              being done badly.
-            </p>
-            <p>
-              That's the work: understanding what a system in this specific climate is
-              actually doing, finding the real cause, and fixing that rather than
-              replacing parts until the symptom goes away.
-            </p>
-            <Link className="text-link" to="/about">
-              More about how we work <ArrowUpRight size={15} aria-hidden="true" />
-            </Link>
+          <div className="intro-main">
+            <div className="intro-headline">
+              <h2 data-reveal>
+                An air conditioner is not a<br />
+                <em>luxury in this climate.</em>
+              </h2>
+            </div>
 
-            <dl className="intro-facts">
-              <div>
-                <dt>Property types</dt>
-                <dd>Residential &amp; Commercial</dd>
+            <div className="intro-copy" data-reveal>
+              <p className="lead">
+                South Florida runs its cooling systems close to year-round, and in this
+                climate humidity does more damage to comfort than heat does. A system here
+                is not just holding a temperature — it is pulling several gallons of water
+                a day out of the air, and most comfort complaints trace back to that job
+                being done badly.
+              </p>
+              <p>
+                That's the work: understanding what a system in this specific climate is
+                actually doing, finding the real cause, and fixing that rather than
+                replacing parts until the symptom goes away.
+              </p>
+              <Link className="text-link" to="/about">
+                More about how we work <ArrowUpRight size={15} aria-hidden="true" />
+              </Link>
+
+              <dl className="intro-facts">
+                <div>
+                  <dt>Property types</dt>
+                  <dd>Residential &amp; Commercial</dd>
+                </div>
+                <div>
+                  <dt>Coverage</dt>
+                  <dd>Broward · Miami-Dade · Palm Beach</dd>
+                </div>
+                <div>
+                  <dt>Pricing</dt>
+                  <dd>Quoted before work begins</dd>
+                </div>
+                </dl>
               </div>
-              <div>
-                <dt>Coverage</dt>
-                <dd>Broward · Miami-Dade · Palm Beach</dd>
-              </div>
-              <div>
-                <dt>Pricing</dt>
-                <dd>Quoted before work begins</dd>
-              </div>
-            </dl>
           </div>
 
           <div className="intro-visual" data-reveal>
