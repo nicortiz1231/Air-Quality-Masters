@@ -29,3 +29,12 @@ export function jumpToTop() {
   }
   window.scrollTo(0, 0);
 }
+
+/** Animated scroll to an absolute Y. Falls back to a native smooth scroll. */
+export function scrollToY(y) {
+  if (lenis) {
+    lenis.scrollTo(y, { duration: 0.9 });
+    return;
+  }
+  window.scrollTo({ top: y, behavior: "smooth" });
+}

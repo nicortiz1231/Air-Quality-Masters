@@ -7,7 +7,7 @@ import { ArrowDown, ArrowUpRight, Phone } from "lucide-react";
 import Seo from "../components/Seo.jsx";
 import AirflowField from "../components/visual/AirflowField.jsx";
 import SystemAnatomy from "../components/visual/SystemAnatomy.jsx";
-import ProcessSequence from "../components/visual/ProcessSequence.jsx";
+import ProcessScroller from "../components/visual/ProcessScroller.jsx";
 import ComfortZone from "../components/visual/ComfortZone.jsx";
 import TrustBadges from "../components/TrustBadges.jsx";
 import ServiceRequestForm from "../components/ServiceRequestForm.jsx";
@@ -322,28 +322,7 @@ export default function Home() {
       </section>
 
       {/* ── Process ──────────────────────────────────────────────────── */}
-      <section className="process">
-        <div className="process-visual" aria-hidden="true">
-          <div className="process-image" />
-          <div className="process-shade" />
-        </div>
-
-        <div className="section-shell process-shell">
-          <div className="section-index light" data-reveal>
-            <span>05</span>
-            <span>How a service call works</span>
-          </div>
-
-          <div className="process-title">
-            <h2 data-reveal>
-              From the first symptom<br />
-              <em>to a working system.</em>
-            </h2>
-          </div>
-
-          <ProcessSequence />
-        </div>
-      </section>
+      <ProcessScroller />
 
       {/* ── Service areas ────────────────────────────────────────────── */}
       <section className="areas-teaser section-shell">

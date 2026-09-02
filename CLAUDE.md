@@ -100,18 +100,36 @@ the signature visuals make air visible. Three coded pieces, all in
   technical section on a blueprint grid. Content lives in `src/data/anatomy.js`.
   The SVG is `aria-hidden`; hotspots are real HTML buttons positioned in
   percentage coordinates off the viewBox, so it is keyboard-operable.
-- `ProcessSequence.jsx` — sticky-scroll sequence, image column pinned while
-  steps scroll past.
+- `ProcessScroller.jsx` — "How a service call works" as a pinned,
+  full-viewport scroller. The section is N x 100svh; a sticky stage holds the
+  viewport while full-bleed slides take over one at a time. Below 900px, and
+  under reduced motion, it renders `ProcessList` instead — a plain stacked
+  list. Keep that opt-out: a scroll-hijacking pinned section is unpleasant on a
+  phone and hostile to anyone with vestibular sensitivity.
 
-Two bugs already fixed here; do not reintroduce them:
+Four bugs already fixed around sticky/scroll; do not reintroduce them:
 
-- **`overflow: hidden` on a section breaks `position: sticky` inside it.**
+- **`overflow: hidden` on an ancestor breaks `position: sticky` inside it.**
   `.process` originally clipped its parallax background, which silently killed
-  the sticky process column. The clip lives on `.process-visual` instead.
+  the sticky column.
+- **A transformed ancestor also breaks sticky** — it becomes the containing
+  block for every descendant. The route entrance animation used to animate
+  `transform: translateY(12px)` on `<main>`, which broke the pinned scroller
+  for the life of the animation. `.route-enter` now animates opacity only.
+- **`100vh` is the LARGE viewport** and can exceed the space actually on
+  screen (browser chrome, mobile URL bars), so a "full screen" pinned stage
+  overflows. Use `100svh` with a `vh` line before it as the fallback, and
+  measure against `window.innerHeight` in JS, never the CSS unit.
 - **IntersectionObserver callbacks only carry entries whose state CHANGED.**
   Picking "nearest the viewport centre" from the callback argument alone
-  chooses wrong. `ProcessSequence` keeps a full visibility Map and decides from
-  every currently-intersecting step.
+  chooses wrong. `ProcessScroller` avoids IO entirely and derives the active
+  step from scroll progress through the pinned range, which is exact.
+
+Verifying scroll-driven behaviour in automation: the Chrome automation tab can
+end up with a frozen rendering pipeline — no rAF, no scroll events, no IO
+delivery — while `getBoundingClientRect` still reports correct layout. Measure
+geometry directly, and dispatch `new Event("scroll")` by hand to exercise a
+scroll handler. Do not trust screenshots from that state.
 
 `window.__lenis` is exposed in dev only. Smooth scroll fights programmatic
 `window.scrollTo`, so scroll-driven behaviour cannot be tested without
