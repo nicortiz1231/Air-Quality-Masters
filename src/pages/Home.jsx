@@ -8,6 +8,7 @@ import Seo from "../components/Seo.jsx";
 import AirflowField from "../components/visual/AirflowField.jsx";
 import SystemAnatomy from "../components/visual/SystemAnatomy.jsx";
 import ProcessSequence from "../components/visual/ProcessSequence.jsx";
+import ComfortZone from "../components/visual/ComfortZone.jsx";
 import TrustBadges from "../components/TrustBadges.jsx";
 import ServiceRequestForm from "../components/ServiceRequestForm.jsx";
 import { localBusinessSchema } from "../lib/seo.js";
@@ -130,11 +131,11 @@ export default function Home() {
         <div className="intro-grid">
           <div className="intro-copy" data-reveal>
             <p className="lead">
-              South Florida runs its cooling systems close to year-round. Equipment here
-              accumulates wear on a schedule much nearer a commercial building than a home
-              in a four-season climate, and humidity introduces failure modes — clogged
-              condensate drains, microbial growth in duct work, corrosion on coastal
-              coils — that generic HVAC advice simply doesn't account for.
+              South Florida runs its cooling systems close to year-round, and in this
+              climate humidity does more damage to comfort than heat does. A system here
+              is not just holding a temperature — it is pulling several gallons of water
+              a day out of the air, and most comfort complaints trace back to that job
+              being done badly.
             </p>
             <p>
               That's the work: understanding what a system in this specific climate is
@@ -144,23 +145,28 @@ export default function Home() {
             <Link className="text-link" to="/about">
               More about how we work <ArrowUpRight size={15} aria-hidden="true" />
             </Link>
+
+            <dl className="intro-facts">
+              <div>
+                <dt>Property types</dt>
+                <dd>Residential &amp; Commercial</dd>
+              </div>
+              <div>
+                <dt>Coverage</dt>
+                <dd>Broward · Miami-Dade · Palm Beach</dd>
+              </div>
+              <div>
+                <dt>Pricing</dt>
+                <dd>Quoted before work begins</dd>
+              </div>
+            </dl>
           </div>
 
-          <div className="intro-facts" data-reveal>
-            <div>
-              <span>Property types</span>
-              <strong>Residential &amp; Commercial</strong>
-            </div>
-            <div>
-              <span>Coverage</span>
-              <strong>Broward · Miami-Dade · Palm Beach</strong>
-            </div>
-            <div>
-              <span>Pricing</span>
-              <strong>Quoted before work begins</strong>
-            </div>
+          <div className="intro-visual" data-reveal>
+            <ComfortZone />
           </div>
         </div>
+
         <figure className="figure-strip" data-reveal>
           {[
             ["/coil-copper-detail.jpg", "Copper refrigerant coil tubing", "01", "Condenser coil and line set"],
@@ -199,27 +205,23 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="services-editorial-list">
+          <div className="svc-grid">
             {services.map((service) => (
-              <Link
-                className="service-editorial-row"
-                to={`/services/${service.slug}`}
-                key={service.slug}
-                data-reveal
-              >
-                <span className="service-editorial-number">{service.number}</span>
-                <div className="service-editorial-thumb">
+              <Link className="svc-card" to={`/services/${service.slug}`} key={service.slug} data-reveal>
+                <div className="svc-card-media">
                   <img src={service.image} alt="" loading="lazy" />
+                  <span className="svc-card-num">{service.number}</span>
                 </div>
-                <div className="service-editorial-main">
+                <div className="svc-card-body">
                   <h3>{service.title}</h3>
-                  <p>{service.summary}</p>
+                  <p>{service.short}</p>
+                  <ul className="svc-card-tags">
+                    {service.tags.map((t) => <li key={t}>{t}</li>)}
+                  </ul>
                 </div>
-                <div className="service-editorial-tags">
-                  {service.tags.map((tag) => <span key={tag}>{tag}</span>)}
-                </div>
-                <span className="service-editorial-link" aria-hidden="true">
-                  <ArrowUpRight size={17} />
+                <span className="svc-card-cta">
+                  What this covers
+                  <i aria-hidden="true"><ArrowUpRight size={15} /></i>
                 </span>
               </Link>
             ))}

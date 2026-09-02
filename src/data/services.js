@@ -10,6 +10,7 @@
 export const services = [
   {
     slug: "ac-repair",
+    short: "Warm air, constant running, water where it shouldn't be — or nothing at all.",
     number: "01",
     title: "Residential AC Repair",
     shortTitle: "AC Repair",
@@ -61,6 +62,7 @@ export const services = [
 
   {
     slug: "commercial-hvac",
+    short: "Rooftop units, split systems and multi-zone equipment, scheduled around your operation.",
     number: "02",
     title: "Commercial HVAC",
     shortTitle: "Commercial",
@@ -109,6 +111,7 @@ export const services = [
 
   {
     slug: "duct-cleaning",
+    short: "Airflow, leaks, and the moisture problems this humidity causes in attic duct work.",
     number: "03",
     title: "Air Duct Cleaning & Ventilation",
     shortTitle: "Ducts & Ventilation",
@@ -158,6 +161,7 @@ export const services = [
 
   {
     slug: "installation",
+    short: "Right-sized replacement, sized by load calculation and verified under load.",
     number: "04",
     title: "AC Installation & Replacement",
     shortTitle: "Installation",
@@ -207,6 +211,7 @@ export const services = [
 
   {
     slug: "maintenance",
+    short: "Catch the failures on a planned visit instead of on the hottest day of the year.",
     number: "05",
     title: "Preventative Maintenance",
     shortTitle: "Maintenance",
@@ -255,6 +260,7 @@ export const services = [
 
   {
     slug: "indoor-air-quality",
+    short: "For when the air itself is the problem, not the temperature.",
     number: "06",
     title: "Indoor Air Quality",
     shortTitle: "Air Quality",

@@ -7,6 +7,7 @@ import MobileCallBar from "./MobileCallBar.jsx";
 import ScrollToTop from "./ScrollToTop.jsx";
 import RouteTransition from "./RouteTransition.jsx";
 import useReveal from "../hooks/useReveal.js";
+import { registerLenis, unregisterLenis } from "../lib/scroll.js";
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -19,6 +20,7 @@ export default function Layout() {
     // which makes scroll-driven behaviour impossible to test without a handle
     // on the instance.
     if (import.meta.env.DEV) window.__lenis = lenis;
+    registerLenis(lenis);
     let raf;
     const tick = (time) => {
       lenis.raf(time);
@@ -27,6 +29,7 @@ export default function Layout() {
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
+      unregisterLenis();
       lenis.destroy();
     };
   }, []);
