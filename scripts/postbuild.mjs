@@ -104,9 +104,17 @@ for (const route of routes) {
   if (route.path === "/") {
     await writeFile(join(dist, "index.html"), html);
   } else {
-    const dir = join(dist, route.path);
-    await mkdir(dir, { recursive: true });
-    await writeFile(join(dir, "index.html"), html);
+    // "<route>.html", NOT "<route>/index.html".
+    //
+    // Netlify serves /contact straight from contact.html, but a directory
+    // index makes it 301 to /contact/ — so every canonical, every sitemap
+    // entry and every internal link pointed at a URL that redirected, and the
+    // canonical on the slashed page pointed back at the redirecting form.
+    // A canonical that resolves to a redirect is a real SEO defect, and it
+    // was invisible locally because the dev server does not behave this way.
+    const file = join(dist, `${route.path}.html`);
+    await mkdir(dirname(file), { recursive: true });
+    await writeFile(file, html);
   }
 }
 
