@@ -105,12 +105,11 @@ export const company = {
   dataRetentionYears: 3,
 
   // --- Site ----------------------------------------------------------------
-  // Canonical host, WITH www. Everything derives from this: canonical tags,
-  // sitemap.xml, og:url, and the LocalBusiness @id. The apex 301s to www at
-  // the edge, so publishing the apex here would point every canonical at a
-  // URL that redirects. Change this and index.html's hardcoded copies
-  // together — they have to agree, especially the schema @id.
-  url: "https://www.aqmasters.com",
+  // Canonical host. Everything derives from this: canonical tags, sitemap.xml,
+  // og:url and the LocalBusiness @id. www.aqmasters.com 301s here at the edge.
+  // Change this and index.html's hardcoded copies together — they have to
+  // agree, especially the schema @id, which page-level schema references.
+  url: "https://aqmasters.com",
   serviceType: "HVAC Contractor",
 };
 
