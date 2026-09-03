@@ -26,7 +26,11 @@ export const company = {
     display: "786-841-6255",
     href: "tel:+17868416255",
   },
-  email: "info@aqmasters.com", // VERIFY: old site obfuscated this behind a mailto scrape guard.
+  // CONFIRMED routable: mail.aqmasters.com carries MX records to Mailgun
+  // (mxa/mxb.mailgun.org). Note this is the mail. SUBDOMAIN — the apex
+  // aqmasters.com has no MX at all, so info@aqmasters.com bounces and must
+  // never be published on the site.
+  email: "info@mail.aqmasters.com",
 
   address: {
     street: "3405 NW 44th St",

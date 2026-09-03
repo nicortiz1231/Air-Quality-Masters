@@ -35,12 +35,19 @@ could not confirm. Nothing that is `null` appears anywhere on the site.
 - **The legal entity.** `Air Quality Masters, LLC` — taken from the company's
   own published Terms and Conditions. It appears in the footer copyright and
   in the policy pages, and nowhere in marketing copy.
+- **The email address.** `info@mail.aqmasters.com`, confirmed routable —
+  `mail.aqmasters.com` carries MX records to Mailgun. **The apex
+  `aqmasters.com` has no MX at all**, so `info@aqmasters.com` bounces; it was
+  on the site and has been removed. Do not put an apex address back without
+  adding MX records first.
 
 ### Still to resolve
 
-1. **The email address.** `info@aqmasters.com` is inferred, not confirmed. The
-   old site hid it behind a scrape guard. Verify it receives mail — it is
-   printed on all three policy pages as a contact route.
+1. **Confirm mail is actually delivered, not just routed.** The MX records for
+   `mail.aqmasters.com` point at Mailgun, which proves mail is *accepted* —
+   it does not prove a Mailgun route forwards it to somewhere a person reads.
+   Send a test message to `info@mail.aqmasters.com` from an outside address
+   and confirm it arrives.
 2. **The data retention period.** `company.dataRetentionYears` is set to `3`
    and the privacy policy states it as a promise. Confirm the office actually
    keeps service records that long, and change the number if not. A retention
