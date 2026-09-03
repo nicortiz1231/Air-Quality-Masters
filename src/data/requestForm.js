@@ -29,7 +29,6 @@ export const FIELDS = [
   "urgency",
   "contact_preference",
   "message",
-  "consent",
   "sms_marketing_consent",
   "sms_transactional_consent",
 ];

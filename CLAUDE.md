@@ -180,5 +180,12 @@ deliver.
 **The invariant: no state tells someone "we've got it" when we have not.** A
 booking form that drops requests is worse than no form.
 
-The consent checkbox is required and its wording is mirrored in the privacy
-policy's "Phone calls, texts and email" section. Change one, change the other.
+The form carries two optional SMS opt-ins with the A2P 10DLC consent language
+reproduced verbatim as registered. Both are unticked by default and neither is
+validated — consent required in order to submit is not consent, and a
+pre-ticked box is not an opt-in. Do not reword either one without
+re-registering the campaign. Their wording is mirrored in the privacy policy's
+"Phone calls, texts and email" section: change one, change the other.
+
+There is no separate "you may contact me" checkbox; submitting the form is the
+request to be contacted.

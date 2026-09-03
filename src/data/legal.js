@@ -150,7 +150,7 @@ export const privacyPolicy = {
       id: "calls",
       heading: "Phone calls, texts and email",
       body: [
-        "When you submit the service request form you are asking us to get in touch, and you confirm that we may contact you at the number and email address you gave us about that request. We contact you about your request — a call to confirm a time, a text when the technician is on the way, an email with a quote.",
+        "Submitting the service request form is itself the request for us to get in touch, so there is no separate box to tick for it. We contact you at the number and email address you gave us, about that request only — a call to confirm a time, a text when the technician is on the way, an email with a quote.",
         "The form also carries two separate text-message opt-ins, both optional and both unticked by default. Neither is needed to submit the form or to get service, and we do not treat a blank box as a yes.",
         {
           list: [

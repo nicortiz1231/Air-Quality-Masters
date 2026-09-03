@@ -54,7 +54,6 @@ const EMPTY = {
   urgency: "soon",
   contactPreference: "any",
   message: "",
-  consent: false,
   // A2P 10DLC / TCPA opt-ins. Both are OPTIONAL and default to false: consent
   // that is required in order to submit is not consent, and a pre-ticked box
   // is not an opt-in. Neither is validated for exactly that reason.
@@ -79,7 +78,6 @@ function validate(v) {
   if (!v.address.trim()) e.address = "We need the street address to send a technician.";
   if (!v.city.trim()) e.city = "Which city is the property in?";
 
-  if (!v.consent) e.consent = "Please confirm we can contact you about this request.";
   return e;
 }
 
@@ -97,7 +95,6 @@ function payload(v) {
     urgency: URGENCY.find((u) => u.value === v.urgency)?.label || v.urgency,
     contact_preference: CONTACT_PREFERENCES.find((c) => c.value === v.contactPreference)?.label || "",
     message: v.message.trim() || "(no additional detail provided)",
-    consent: "Yes — consented to be contacted about this request",
     // Recorded either way. A "No" is evidence too: the proof a carrier or a
     // regulator asks for is what the person chose, not merely that they opted in.
     sms_marketing_consent: v.smsMarketing
@@ -363,21 +360,6 @@ export default function ServiceRequestForm({ defaultService = "", defaultUrgency
           value={values.message} onChange={set("message")}
         />
       </Field>
-
-      <label className={`form-consent${errors.consent ? " has-error" : ""}`}>
-        <input
-          type="checkbox" name="consent" checked={values.consent}
-          onChange={set("consent")} aria-invalid={!!errors.consent}
-        />
-        <span>
-          You can contact me by phone, text or email about this request. Standard message
-          and data rates may apply. This is not a marketing subscription — see our{" "}
-          <Link to="/privacy">Privacy Policy</Link>.
-        </span>
-      </label>
-      {errors.consent && (
-        <small className="field-error field-error-standalone" role="alert">{errors.consent}</small>
-      )}
 
       {/* Carrier-facing SMS opt-ins, reproduced verbatim as registered for A2P
           10DLC. Do not reword: the campaign registration is approved against

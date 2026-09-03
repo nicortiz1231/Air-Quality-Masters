@@ -100,14 +100,19 @@ address, not to an account.
 ### What the form collects
 
 Name, phone, email, **street address**, city, property type, service, urgency,
-preferred contact method, description, and an explicit consent checkbox. The
+preferred contact method, description, and two optional SMS opt-ins. The
 street address is required — a technician cannot be dispatched to a city.
 
-The consent checkbox is not decoration. It is the record that the customer
-agreed to be contacted by phone, text or email, which is what the TCPA asks
-for and what an ad platform will ask to see. Its wording matches the "Phone
-calls, texts and email" section of the privacy policy; change one and change
-the other.
+The two opt-ins carry the A2P 10DLC consent language exactly as registered,
+and both are optional and unticked by default — consent required in order to
+submit is not consent. Both answers are recorded in the payload, including the
+refusals, because what a carrier or regulator asks to see is what the person
+actually chose. Their wording is mirrored in the "Phone calls, texts and
+email" section of the privacy policy; change one and change the other, and
+re-register the campaign before altering either checkbox.
+
+There is no longer a separate "you may contact me" checkbox. Submitting the
+form is itself the request to be contacted, and the policy says so.
 
 ### Adding a field later
 
