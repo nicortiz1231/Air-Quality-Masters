@@ -19,6 +19,9 @@
   --ink:        #0b1a22;   /* deep, cold near-black */
   --ink-2:      #142c39;
   --ink-3:      #1d3d4d;
+  /* The hero ground. Deeper and colder than --ink, because a field of 1px
+     trails needs somewhere dark enough to actually glow against. */
+  --deep:       #04101a;
 
   /* Text */
   --text:       #0b1a22;
@@ -42,7 +45,14 @@
   /* Layout */
   --max: 1500px;
   --pad: clamp(20px, 3.4vw, 56px);
-  --bar: 86px;
+  /* Pixel-matched to the Value Vault header, taken from its own tokens
+     (--spacing-header / --spacing-announce) rather than from a screenshot:
+     announcement bar 25px, 30px from 1024 up; nav row 53px at every width. */
+  --announce: 25px;
+  --bar: 53px;
+  --head: calc(var(--announce) + var(--bar));
+  /* Full-bleed gutters, not the site's centred --pad: 16 / 20 / 32 / 40. */
+  --nav-gutter: 16px;
 
   --ease: cubic-bezier(.22,.61,.36,1);
 }
@@ -53,7 +63,11 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  overflow-x: hidden;
+  /* clip, not hidden. `overflow-x: hidden` makes the body a scroll container,
+     which silently kills `position: sticky` inside it — the pinned hero
+     depends on that. `clip` suppresses the same horizontal overflow without
+     creating one. */
+  overflow-x: clip;
   background: var(--paper);
   color: var(--text);
   font-family: Archivo, "Helvetica Neue", Arial, sans-serif;
@@ -255,65 +269,98 @@ h1 em, h2 em {
    NAVIGATION
    ============================================================ */
 
-.nav {
+/* The bar is opaque on every route including home. A bar that dissolves
+   into the hero photograph is what made the top of the page read as
+   unfinished — the crisp edge between ink strip, paper bar and image is
+   the whole point of the composition. */
+.masthead {
   position: fixed;
   inset: 0 0 auto;
   z-index: 100;
+}
+
+/* Marquee. The track is two identical halves and travels -50% of its own
+   width, so the second half lands exactly where the first started and the
+   loop closes on itself. A percentage resolves against the layout the browser
+   actually performed, so the seam cannot drift the way a measured pixel shift
+   does when the measurement is stale or a subpixel out. Only the duration is
+   set per instance, from the measured run. */
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+.marquee { overflow: hidden; }
+.marquee-track { display: flex; height: 100%; width: max-content; }
+.marquee-animate { animation: marquee var(--marquee-duration, 10s) linear infinite; }
+.marquee-half { display: flex; width: max-content; flex-shrink: 0; }
+.marquee-run { display: flex; width: max-content; flex-shrink: 0; align-items: center; }
+
+/* The one pure-black surface on the site. Everything else reads dark through
+   --ink, the cold near-black, deliberately never #000. */
+.announce {
+  height: var(--announce);
+  background: #000;
+  color: #fff;
+}
+.announce span {
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.nav {
+  position: relative;   /* the centred nav positions against this */
   height: var(--bar);
-  padding: 0 var(--pad);
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 32px;
+  padding-inline: var(--nav-gutter);
+  display: flex;
   align-items: center;
+  gap: 16px;
   background: var(--white);
   border-bottom: 1px solid var(--line-soft);
   color: var(--ink);
-  transition: background .3s var(--ease), color .3s var(--ease), border-color .3s var(--ease);
-}
-/* Over the home hero the bar floats on the image. */
-.nav-over-hero {
-  background: linear-gradient(to bottom, rgba(6,17,24,.62), transparent);
-  border-color: transparent;
-  color: #fff;
 }
 
-.brand { display: flex; align-items: center; gap: 12px; }
-.brand-monogram {
-  width: 42px; height: 42px;
-  display: grid; place-items: center;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  font-size: 12px;
+/* Wordmark, not a lockup. The circle monogram and the three-word
+   descriptor under the name were two extra objects saying what the
+   name already says. */
+.brand {
+  font-size: 26px;
   font-weight: 700;
-  letter-spacing: .01em;
-  opacity: .85;
-}
-.brand-name { display: flex; flex-direction: column; }
-.brand-name strong { font-size: 15px; font-weight: 600; letter-spacing: -.015em; }
-.brand-name small {
-  font-size: 11px;
-  opacity: .6;
-  letter-spacing: .005em;
+  letter-spacing: -.02em;
+  line-height: .98;
 }
 
+/* Taken out of flow and centred on the bar, so the row stays symmetrical
+   whatever the wordmark and the actions on either side happen to measure. */
 .nav-links {
-  justify-self: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 15px;
-  font-weight: 500;
+  gap: 24px;
 }
-.nav-links a {
+/* 18px above and below is what makes the link box exactly as tall as the
+   53px row, so a dropdown starts flush with the header's bottom edge. */
+.nav-links > a,
+.nav-links > .nav-group > a {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 10px 14px;
-  border-radius: 3px;
-  transition: background .2s var(--ease), opacity .2s var(--ease);
+  gap: 4px;
+  padding-block: 18px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: .1px;
+  transition: opacity .2s var(--ease);
 }
-.nav-links a:hover { background: rgba(127,127,127,.12); }
-.nav-links a.is-active { font-weight: 600; }
+/* Hovering any item fades the rest back, so the one under the pointer is the
+   one that reads. The group wrapper keeps its item lit while the pointer is
+   down inside the dropdown. */
+.nav-links:hover > a,
+.nav-links:hover > .nav-group > a { opacity: .3; }
+.nav-links > a:hover,
+.nav-links > .nav-group:hover > a { opacity: 1; }
 
 .nav-group { position: relative; }
 .nav-dropdown {
@@ -348,7 +395,8 @@ h1 em, h2 em {
   font-weight: 600 !important;
 }
 
-.nav-actions { display: flex; align-items: center; gap: 12px; }
+/* The nav is out of flow, so the flex row is wordmark + actions. */
+.nav-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
 .nav-phone {
   display: flex; align-items: center; gap: 8px;
   font-size: 15px;
@@ -356,30 +404,20 @@ h1 em, h2 em {
   letter-spacing: -.01em;
 }
 .nav-phone:hover { color: var(--signal); }
-.nav-over-hero .nav-phone:hover { color: #fff; opacity: .75; }
 
 .nav-request {
-  min-height: 44px;
-  padding: 0 6px 0 18px;
+  height: 42px;
+  padding: 0 20px;
   display: inline-flex;
   align-items: center;
-  gap: 14px;
   background: var(--signal);
   color: #fff;
   font-size: 14px;
   font-weight: 600;
+  letter-spacing: -.005em;
   transition: background .22s var(--ease);
 }
 .nav-request:hover { background: var(--signal-hi); }
-.nav-request i {
-  width: 32px; height: 32px;
-  display: grid; place-items: center;
-  border-radius: 50%;
-  background: rgba(0,0,0,.2);
-  font-style: normal;
-  transition: transform .3s var(--ease);
-}
-.nav-request:hover i { transform: rotate(45deg); }
 
 .menu-button {
   display: none;
@@ -521,94 +559,413 @@ h1 em, h2 em {
 }
 
 /* ============================================================
-   HOME — HERO
+   HOME — HERO (pinned) + PANEL (rises over it)
+
+   The subject is a differential: the air outside becomes the air inside.
+   So the hero draws that traverse — the field runs warm and churned at the
+   left edge and cool and laminar at the right — and the type sits in the
+   change. The warm end is a temperature reading, never an action: --signal
+   does not appear anywhere in this block.
    ============================================================ */
 
+/* The stage is the hero plus the distance it stays pinned for. Both the pad
+   here and the pull-up on .reveal are percentages, which resolve against this
+   box's WIDTH — so they cancel exactly, and neither carries a viewport-height
+   term that browser zoom could break. */
+.hero-stage { position: relative; }
+.hero-pin-space { padding-top: 38%; }
+@media (max-width: 599px) { .hero-pin-space { padding-top: 62%; } }
+
+/* Above .grain (fixed, z-index 1). The film grain blends `overlay`, which on a
+   near-black ground pulls white type down to grey — and the headline here is
+   the one thing on the page that cannot afford that. The field carries its own
+   texture, so it loses nothing by sitting above it. */
 .hero {
-  position: relative;
-  min-height: 100svh;
-  overflow: hidden;
-  padding: calc(var(--bar) + 34px) var(--pad) 26px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 48px;
-  background: #06131c;
-  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding-top: var(--head);
+  background: var(--deep);
 }
+
+/* Height is a function of width, so zoom rescales the composition instead of
+   clipping it. The cap is what keeps the foot band above the fold: svh is the
+   SMALL viewport, the space actually on screen once browser chrome is counted,
+   and vh is the fallback for anything that has not got svh. Under zoom the cap
+   loosens in CSS pixels and the ratio takes over again, which is the whole
+   reason the ratio is still the driver. */
+.hero-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.3;
+  max-height: calc(100vh - var(--head));
+  max-height: calc(100svh - var(--head));
+  overflow: hidden;
+  background: var(--deep);
+  transform-origin: center 38%;
+  will-change: transform;
+}
+/* The ratio has to step on the SAME breakpoint as the gauge, not a breakpoint
+   of its own. Below 900 the gauge is a horizontal band in the flow and the
+   composition is three stacked blocks, which a 16/9 frame cannot hold — the
+   headline overflowed the top of the frame in the 600-899 band when these two
+   were tuned independently. */
+@media (min-width: 600px)  { .hero-frame { aspect-ratio: 4 / 3; } }
+@media (min-width: 900px)  { .hero-frame { aspect-ratio: 16 / 9; } }
+@media (min-width: 1280px) { .hero-frame { aspect-ratio: 1.86 / 1; } }
+
+/* The photograph grounds the frame. Overscanned on both axes because it
+   parallaxes against the frame, and a plane that travels has to be bigger than
+   the box it fills or it exposes a bare edge at the end of its travel.
+
+   Darkened and pulled toward the palette here rather than under yet another
+   dark overlay: one filter costs nothing and leaves the scrim free to do only
+   the job the scrim is for, which is holding type. */
 .hero-image {
   position: absolute;
-  inset: -2%;
-  background: url("/residential-condensers.jpg") center / cover no-repeat;
+  inset: -7% -2%;
+  z-index: 0;
+  background: url("/residential-condensers.jpg") center 42% / cover no-repeat;
+  /* The blur is not softening a sharp picture — the source is 760px wide and
+     the frame is not, so it arrives soft. Making that deliberate turns an
+     upscaling artefact into depth, and drops the plane behind the type where
+     it belongs. */
+  filter: brightness(.46) saturate(.62) contrast(1.08) blur(1px);
+  will-change: transform;
 }
-.hero-overlay {
+
+/* The traverse, applied to the photograph. The equipment sits on the left, so
+   the left is the outdoor air it is standing in and the right is the
+   conditioned side — the same reading the field and the gauge carry, in the
+   same two temperatures. soft-light so it grades the picture rather than
+   painting over it. */
+.hero-grade {
   position: absolute;
   inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  background: linear-gradient(
+    100deg,
+    rgba(232, 140, 72, .74) 0%,
+    rgba(232, 140, 72, .20) 32%,
+    rgba(126, 200, 244, .26) 64%,
+    rgba(126, 200, 244, .92) 100%
+  );
+}
+
+/* Above the photograph, so the air reads as moving over the equipment. Lighter
+   than it was when it carried the frame alone: over a picture the same density
+   stops being air and becomes noise. */
+/* Two gradients, not three: a foot scrim that seats the type and a vignette
+   that closes the frame. Stacking a third is what turned this to mud before. */
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
   background:
-    linear-gradient(94deg, rgba(6,17,24,.88), rgba(6,17,24,.52) 44%, rgba(6,17,24,.1) 80%),
-    linear-gradient(180deg, rgba(6,17,24,.34), rgba(6,17,24,.05) 46%, rgba(6,17,24,.8));
+    linear-gradient(to top, rgba(4,16,26,.97) 0%, rgba(4,16,26,.74) 28%, rgba(4,16,26,0) 72%),
+    radial-gradient(124% 106% at 52% 26%, rgba(4,16,26,0) 30%, rgba(4,16,26,.66) 100%);
 }
-.hero-topline, .hero-layout, .hero-bottom {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: var(--max);
-  margin-inline: auto;
-}
-.hero-topline {
-  display: flex;
-  gap: 26px;
-  color: var(--on-dark-mute);
-  font-size: 13px;
-  font-weight: 500;
-}
-.hero-topline span + span { padding-left: 26px; border-left: 1px solid rgba(255,255,255,.16); }
 
-.hero-layout {
+/* Sinks the frame as the panel climbs over it, so the two are never competing
+   for attention at the same brightness. */
+.hero-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  background: var(--deep);
+}
+
+.hero-content {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
   display: grid;
-  grid-template-columns: minmax(0,1.35fr) minmax(320px,.65fr);
-  gap: clamp(48px, 6vw, 110px);
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: clamp(20px, 2.6vw, 44px) var(--nav-gutter) clamp(16px, 2vw, 30px);
 }
-.hero-heading {
-  font-size: clamp(66px, 11.4vw, 178px);
-  line-height: .78;
-  letter-spacing: -.055em;
-  font-weight: 600;
-}
-/* The mask that the headline slides out of. Padding must clear the
-   descender at the largest clamp size or the baseline gets sliced. */
-.hero-line { display: block; overflow: hidden; padding-bottom: .16em; }
-.hero-line > span { display: block; }
-.hero-line-indent { padding-left: 7vw; }
 
-.hero-eyebrow {
-  display: block;
-  margin-bottom: 18px;
-  color: var(--cold-soft);
-  font-family: "Instrument Serif", Georgia, serif;
-  font-style: italic;
-  font-size: 27px;
-}
-.hero-side p {
-  max-width: 46ch;
-  color: var(--on-dark-soft);
-  font-size: 17px;
-  line-height: 1.62;
-}
-.hero-buttons { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 10px; }
+/* ── The word ──────────────────────────────────────────────── */
 
-.hero-bottom {
-  padding-top: 16px;
+/* Spans both columns: the gauge sits in the row above, so the type is free to
+   run under it and use the full frame. vw only — a vh term would resize the
+   headline against the window rather than against the layout it belongs to. */
+.hero-word {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  align-self: end;
+  margin: 0;
+  display: grid;
+  justify-items: start;
+  font-size: clamp(46px, 8.7vw, 152px);
+  line-height: .86;
+  letter-spacing: -.05em;
+  color: #fff;
+  /* Clearance for the foot rule, which otherwise lands on the descender of the
+     second word. In em so it tracks the type rather than the window. */
+  margin-bottom: .22em;
+  will-change: transform;
+}
+.hero-word span { display: block; white-space: nowrap; }
+/* The indent carries the eye left to right, along the traverse the words are
+   sitting in. In em, so it scales with the type instead of drifting at width. */
+.hero-word span + span { margin-left: 1.05em; }
+
+/* ── The gauge ─────────────────────────────────────────────── */
+
+/* Not a card — a scale in the margin. The rule between the two stops runs
+   warm to cool, so the line itself is the work being described. */
+.hero-gauge {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  margin: 0;
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  border-top: 1px solid rgba(255,255,255,.18);
-  color: var(--on-dark-mute);
-  font-size: 13px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 9px;
+  text-align: right;
+  color: #fff;
 }
-.hero-bottom a { display: inline-flex; align-items: center; gap: 8px; color: var(--on-dark-soft); }
-.hero-bottom a:hover { color: #fff; }
+.hero-gauge-stop { display: grid; gap: 3px; justify-items: end; }
+.hero-gauge-label { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.66); }
+.hero-gauge-value {
+  font-size: clamp(21px, 1.9vw, 31px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -.03em;
+}
+.hero-gauge-sub { font-size: 12px; color: rgba(255,255,255,.84); }
+.hero-gauge-rule {
+  width: 2px;
+  height: clamp(34px, 4.2vw, 68px);
+  background: linear-gradient(to bottom, rgba(206,146,104,.95), rgba(146,202,232,.95));
+}
+.hero-gauge figcaption {
+  margin-top: 5px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(255,255,255,.22);
+  font-size: 11px;
+  color: rgba(255,255,255,.62);
+}
+
+/* ── The foot band ─────────────────────────────────────────── */
+
+.hero-foot {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: clamp(20px, 3vw, 56px);
+  padding-top: clamp(16px, 1.8vw, 26px);
+}
+.hero-rule {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: rgba(255,255,255,.24);
+  transform-origin: left;
+}
+.hero-lede {
+  /* ch resolves against this element's own font-size, which is the point:
+     the measure has to sit on the thing carrying the type size. */
+  max-width: 42ch;
+  font-size: clamp(15px, 1.1vw, 19px);
+  line-height: 1.5;
+  color: var(--on-dark-soft);
+}
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 1.8vw, 28px);
+}
+.hero-call {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,.28);
+  padding-bottom: 3px;
+  transition: border-color .25s var(--ease);
+}
+.hero-call:hover { border-color: #fff; }
+
+/* Portrait frames have no room for a margin instrument, so the scale rotates:
+   the same two stops with the same warm-to-cool rule, read left to right. */
+@media (max-width: 899px) {
+  .hero-content { grid-template-columns: minmax(0, 1fr); }
+  .hero-gauge {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: stretch;
+    flex-direction: row;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0 14px;
+    text-align: left;
+    padding-bottom: clamp(14px, 2.4vw, 22px);
+  }
+  .hero-gauge-stop { justify-items: start; }
+  .hero-gauge-stop:last-of-type { text-align: right; justify-items: end; }
+  .hero-gauge-rule {
+    flex: 1;
+    width: auto;
+    height: 1px;
+    min-width: 24px;
+    margin: 0 0 13px;
+    background: linear-gradient(to right, rgba(206,146,104,.95), rgba(146,202,232,.95));
+  }
+  .hero-gauge figcaption {
+    flex-basis: 100%;
+    order: 1;
+    margin-top: 11px;
+  }
+  .hero-foot { grid-row: 4; }
+}
+
+@media (max-width: 699px) {
+  .hero-foot { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .hero-actions { justify-content: space-between; }
+}
+
+@media (max-width: 599px) {
+  .hero-gauge-sub { font-size: 11px; }
+  .hero-gauge figcaption { padding-top: 8px; font-size: 10px; }
+  /* One line needs the full width to earn its scale. In the portrait frame
+     there is none, so the words stack hard left and grow instead. */
+  .hero-word { font-size: clamp(44px, 15.5vw, 86px); }
+  .hero-word span + span { margin-left: .4em; }
+}
+
+/* ── The panel ─────────────────────────────────────────────── */
+
+/* Pulled back up by exactly the stage's pin distance, so it starts flush under
+   the hero and then climbs over it. White, not paper: the rise off a near-black
+   frame needs to land on a brighter plane than the one the page returns to. */
+.reveal {
+  position: relative;
+  z-index: 3;   /* over the hero, and over .grain with it */
+  margin-top: -38%;
+  padding-block: clamp(52px, 5.8vw, 96px) clamp(42px, 4.6vw, 76px);
+  background: var(--white);
+  transform-origin: center top;
+  will-change: transform;
+  box-shadow: 0 -30px 60px -30px rgba(4,16,26,.5);
+}
+@media (max-width: 599px) { .reveal { margin-top: -62%; } }
+
+.reveal-inner {
+  display: grid;
+  grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr);
+  gap: clamp(30px, 4.2vw, 76px);
+  align-items: start;
+}
+.reveal-head h2 { max-width: 11ch; }
+.reveal-head p {
+  margin-top: clamp(16px, 1.6vw, 24px);
+  max-width: 34ch;
+  color: var(--text-soft);
+}
+
+/* ── Triage rows ───────────────────────────────────────────── */
+
+/* Rows, not cards. Each is one state someone arrives in, and the right-hand
+   label is where that state leads — the structure is the routing. */
+.triage { border-top: 1px solid var(--line); }
+.triage li { border-bottom: 1px solid var(--line); }
+.triage a {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: clamp(14px, 2.2vw, 36px);
+  padding: clamp(17px, 1.8vw, 26px) 2px;
+  transition: padding .3s var(--ease);
+}
+/* The same device as the gauge: a reading being taken. --cold, because the
+   hot accent means "act" and this is emphasis, not an action. */
+.triage a::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--cold);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform .32s var(--ease);
+}
+.triage a:hover::before,
+.triage a:focus-visible::before { transform: scaleY(1); }
+.triage a:hover { padding-left: 16px; }
+
+.triage-state {
+  font-size: clamp(17px, 1.45vw, 23px);
+  font-weight: 600;
+  letter-spacing: -.02em;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+.triage-dest {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-mute);
+  transition: color .3s var(--ease);
+}
+.triage a:hover .triage-dest { color: var(--cold); }
+.triage a > i {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  color: var(--text-mute);
+  transition: transform .35s var(--ease), background .25s var(--ease),
+              border-color .25s var(--ease), color .25s var(--ease);
+}
+.triage a:hover > i {
+  transform: rotate(45deg);
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+/* The row that catches everyone the four states do not. On a service site the
+   phone number is the answer to "none of these", so it is the answer here. */
+.triage-else {
+  margin-top: clamp(20px, 2vw, 30px);
+  font-size: 15px;
+  color: var(--text-mute);
+}
+.triage-else a {
+  font-weight: 600;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2px;
+  transition: border-color .25s var(--ease);
+}
+.triage-else a:hover { border-color: var(--ink); }
+
+@media (max-width: 899px) {
+  .reveal-inner { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .reveal-head h2 { max-width: 16ch; }
+  .reveal-head p { max-width: 52ch; }
+}
+@media (max-width: 559px) {
+  .triage a {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px 16px;
+  }
+  .triage-state { grid-column: 1 / -1; }
+}
 
 /* ── Trust badges ──────────────────────────────────────────── */
 
@@ -917,6 +1274,57 @@ h1 em, h2 em {
   opacity: 0;
 }
 
+/* Escalation. Someone with no cooling in a Florida August is not well served
+   by a form, and the honest thing is to say so at the moment they tell us —
+   even though it routes them away from the conversion. */
+.form-escalate {
+  display: flex;
+  gap: 13px;
+  padding: 17px 18px;
+  border: 1px solid rgba(207,59,38,.45);
+  background: rgba(207,59,38,.10);
+}
+.form-escalate > svg { flex: none; margin-top: 2px; color: var(--signal-hi); }
+.form-escalate > div { display: grid; gap: 6px; justify-items: start; }
+.form-escalate strong { color: #fff; font-size: 15px; font-weight: 600; }
+.form-escalate span { color: var(--on-dark-soft); font-size: 14px; line-height: 1.5; }
+.form-escalate .button { margin-top: 7px; }
+
+/* Consent. The checkbox is a real control at a real hit size — a 12px tick box
+   is how consent gets clicked without being read. */
+.form-consent {
+  display: grid !important;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 12px !important;
+  padding: 15px 16px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.04);
+  cursor: pointer;
+}
+.form-consent input {
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  accent-color: var(--signal);
+  cursor: pointer;
+}
+.form-consent span {
+  color: var(--on-dark-soft);
+  font-size: 13.5px;
+  font-weight: 400 !important;
+  line-height: 1.55;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+.form-consent a { color: var(--cold-soft); border-bottom: 1px solid currentColor; }
+.form-consent a:hover { color: #fff; }
+.form-consent.has-error { border-color: var(--signal-hi); }
+.field-error-standalone { margin-top: -10px; }
+
+.form-fineprint a { color: var(--cold-soft); border-bottom: 1px solid currentColor; }
+.form-fineprint a:hover { color: #fff; }
+
 .submit-button {
   margin-top: 6px;
   min-height: 58px;
@@ -978,8 +1386,15 @@ h1 em, h2 em {
 .form-panel .button { margin-top: 10px; }
 .form-success svg { color: #7fd6a8; }
 .form-success-note { font-size: 14px !important; color: var(--on-dark-mute) !important; }
-.form-unconfigured svg { color: #ffc46b; }
-.form-alt-link { color: var(--cold-soft); font-size: 15px; border-bottom: 1px solid currentColor; }
+.form-preview-note {
+  padding: 12px 14px;
+  border-left: 2px solid #ffc46b;
+  background: rgba(255,196,107,.10);
+  color: var(--on-dark-soft) !important;
+  font-size: 13.5px !important;
+}
+.form-preview-note strong { color: #ffc46b; }
+.form-preview-note code { font-size: 12.5px; }
 
 /* ============================================================
    FOOTER
@@ -1038,10 +1453,14 @@ h1 em, h2 em {
   flex-wrap: wrap;
   gap: 10px 28px;
   justify-content: space-between;
+  align-items: center;
   border-top: 1px solid var(--line-dark);
   color: var(--on-dark-mute);
   font-size: 13.5px;
 }
+.footer-legal { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+.footer-legal a { color: var(--on-dark-mute); }
+.footer-legal a:hover { color: #fff; }
 
 /* ============================================================
    INNER PAGES — SHARED HEADER
@@ -1049,7 +1468,7 @@ h1 em, h2 em {
 
 .page-hero {
   position: relative;
-  padding-block: calc(var(--bar) + clamp(46px, 6vw, 86px)) clamp(46px, 6vw, 80px);
+  padding-block: calc(var(--head) + clamp(46px, 6vw, 86px)) clamp(46px, 6vw, 80px);
   background: var(--paper);
   border-bottom: 1px solid var(--line-soft);
 }
@@ -1485,7 +1904,7 @@ h1 em, h2 em {
 .cta-band-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
 .notfound {
-  padding-block: calc(var(--bar) + 90px) 130px;
+  padding-block: calc(var(--head) + 90px) 130px;
   display: grid;
   justify-items: start;
   gap: 20px;
@@ -1498,12 +1917,26 @@ h1 em, h2 em {
    RESPONSIVE
    ============================================================ */
 
-@media (max-width: 1180px) {
-  .nav { grid-template-columns: auto 1fr; }
+@media (min-width: 1440px) { .nav-links { gap: 28px; } }
+@media (min-width: 1920px) {
+  .nav-links > a,
+  .nav-links > .nav-group > a { font-size: 15px; }
+  .announce span { font-size: 13px; }
+}
+
+@media (min-width: 600px)  { :root { --nav-gutter: 20px; } }
+@media (min-width: 1024px) { :root { --nav-gutter: 32px; --announce: 30px; } }
+/* The reference's source asks for a 40px gutter from 1440, but that rule
+   loses the cascade to its own lg:px-8 and never lands — measured on the live
+   site it is 32px at 1512. Matching what it renders, not what it intends.
+   Its 1440 nav gap step does apply, so that one is kept above. */
+
+@media (max-width: 1023px) {
   .nav-links { display: none; }
   .menu-button { display: inline-flex; }
+}
 
-  .hero-layout,
+@media (max-width: 1180px) {
   .intro-grid,
   .services-heading,
   .trust-layout,
@@ -1516,7 +1949,6 @@ h1 em, h2 em {
   .standards-top,
   .cta-band-inner { grid-template-columns: 1fr; }
 
-  .hero-layout { gap: 48px; align-items: start; }
   .services-heading, .trust-layout, .standards-top { gap: 26px; align-items: start; }
   .footer-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 36px 30px; }
   .service-card { grid-template-columns: 1fr; gap: 26px; }
@@ -1528,13 +1960,12 @@ h1 em, h2 em {
 }
 
 @media (max-width: 900px) {
-  :root { --bar: 74px; }
 
   /* The call bar is fixed to the bottom, so the page needs room under it. */
   body { padding-bottom: 58px; }
   .call-bar { display: flex; }
 
-  .brand-name { display: none; }
+  .brand { font-size: 22px; }
   .nav-phone span { display: none; }
   .nav-request { display: none; }
   .nav-actions { gap: 8px; }
@@ -1544,12 +1975,6 @@ h1 em, h2 em {
     border: 1px solid currentColor;
   }
 
-  .hero { min-height: auto; padding-block: calc(var(--bar) + 54px) 24px; gap: 54px; }
-  .hero-topline { flex-wrap: wrap; gap: 8px 16px; font-size: 12px; }
-  .hero-topline span + span { padding-left: 16px; }
-  .hero-line-indent { padding-left: 0; }
-  .hero-heading { font-size: clamp(56px, 15vw, 92px); }
-  .hero-bottom { flex-direction: column; gap: 10px; }
 
   .services-transition-content strong { font-size: clamp(24px, 6vw, 34px); }
   .credentials h2, .page-hero h1 { max-width: none; }
@@ -1585,10 +2010,11 @@ h1 em, h2 em {
     scroll-behavior: auto !important;
   }
   [data-reveal] { opacity: 1 !important; transform: none !important; }
+  .marquee-animate { animation: none !important; }
 }
 
 @media print {
-  .nav, .drawer, .call-bar, .skip-link, .cta-band { display: none !important; }
+  .masthead, .drawer, .call-bar, .skip-link, .cta-band, .cursor-breeze { display: none !important; }
   body { background: #fff; padding-bottom: 0; }
   [data-reveal] { opacity: 1 !important; transform: none !important; }
 }
@@ -1602,6 +2028,17 @@ h1 em, h2 em {
   inset: 0;
   width: 100%;
   height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* Cursor breeze. Above the page, below chrome, never intercepts a click. */
+.cursor-breeze {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 80;
   display: block;
   pointer-events: none;
 }
@@ -1862,10 +2299,6 @@ h1 em, h2 em {
 .anatomy-head h2 { color: #fff; }
 .anatomy-head p { color: var(--on-dark-soft); max-width: 46ch; font-size: 16.5px; }
 
-/* ── Hero airflow ──────────────────────────────────────────── */
-
-.hero-airflow { z-index: 1; }
-
 /* ── Route transition ──────────────────────────────────────── */
 
 .route-curtain {
@@ -1919,54 +2352,6 @@ h1 em, h2 em {
 @media (prefers-reduced-motion: reduce) { .circulation path { animation: none; } }
 
 .anatomy-labels text { fill: rgba(160,200,224,.5); stroke: none; }
-
-/* ── Plate figures ─────────────────────────────────────────── */
-
-.figure-strip {
-  margin: clamp(44px, 4.6vw, 72px) 0 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(16px, 2vw, 30px);
-}
-.figure-plate-media {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  background: var(--ink);
-}
-.figure-plate-media img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transition: transform .9s var(--ease), filter .6s var(--ease);
-}
-.figure-plate:hover .figure-plate-media img { transform: scale(1.05); }
-.figure-plate figcaption {
-  margin-top: 12px;
-  display: flex;
-  gap: 12px;
-  color: var(--text-mute);
-  font-size: 13px;
-  line-height: 1.45;
-}
-.figure-plate figcaption span {
-  flex: none;
-  color: var(--cold);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-@media (max-width: 1180px) {
-  .figure-strip { gap: 14px; }
-}
-@media (max-width: 900px) {
-  .figure-strip { grid-template-columns: 1fr 1fr; }
-  .figure-strip .figure-plate:last-child { display: none; }
-}
-@media (max-width: 620px) {
-  .figure-strip { grid-template-columns: 1fr; }
-  .figure-strip .figure-plate:last-child { display: block; }
-}
-
 
 /* ============================================================
    COMFORT ZONE PLOT
@@ -2355,4 +2740,179 @@ h1 em, h2 em {
     opacity: 1 !important;
   }
   .pflow-inner { min-height: 0; padding-block: clamp(64px, 10vh, 110px); }
+}
+
+/* ============================================================
+   LEGAL DOCUMENTS + SITEMAP
+
+   A policy page is read the way nothing else on a marketing site is read:
+   sceptically, in search of one clause. So the priority is a contents rail
+   that stays put, headings that are linkable, and a measure narrow enough
+   that a paragraph of legal prose does not become a wall.
+   ============================================================ */
+
+.legal-layout {
+  padding-block: clamp(48px, 6vw, 86px) clamp(64px, 8vw, 110px);
+  display: grid;
+  grid-template-columns: minmax(200px, 250px) minmax(0, 1fr);
+  gap: clamp(38px, 5vw, 82px);
+  align-items: start;
+}
+
+.legal-toc {
+  position: sticky;
+  /* Clears the fixed masthead. The same offset scrollToEl() measures. */
+  top: calc(var(--head) + 26px);
+  display: grid;
+  gap: 22px;
+  align-content: start;
+}
+.legal-toc ol { display: grid; gap: 9px; counter-reset: toc; }
+.legal-toc li { counter-increment: toc; }
+/* Scoped to the contents list. Unscoped, the counter and the two-column grid
+   also landed on the cross-document links below, numbering every one of them
+   with the last section's count. */
+.legal-toc ol a {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 4px;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.legal-toc ol a::before {
+  content: counter(toc, decimal-leading-zero);
+  color: var(--text-mute);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  padding-top: 2px;
+}
+.legal-toc ol a:hover { color: var(--cold); }
+
+.legal-toc-meta { display: grid; gap: 5px; padding-top: 20px; border-top: 1px solid var(--line-soft); }
+.legal-toc-meta time { color: var(--text); font-size: 14px; font-weight: 500; }
+
+.legal-toc-other { display: grid; gap: 8px; }
+.legal-toc-other a { color: var(--cold); font-size: 14px; font-weight: 500; }
+
+.legal-body { max-width: 74ch; display: grid; gap: 46px; }
+.legal-section { display: grid; gap: 15px; scroll-margin-top: calc(var(--head) + 24px); }
+.legal-section:focus { outline: none; }
+.legal-section:focus-visible { outline: 2px solid var(--cold); outline-offset: 8px; }
+
+/* Section headings sit well below the display scale — these are signposts in
+   a document, not section titles on a landing page. */
+.legal-section h2 {
+  font-size: clamp(21px, 2.2vw, 27px);
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+.legal-section p { color: var(--text-soft); font-size: 16px; line-height: 1.65; }
+
+.legal-list { display: grid; gap: 10px; }
+.legal-list li {
+  position: relative;
+  padding-left: 22px;
+  color: var(--text-soft);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.legal-list li::before {
+  content: "";
+  position: absolute;
+  left: 2px; top: 11px;
+  width: 7px; height: 1px;
+  background: var(--cold);
+}
+
+.legal-defs { display: grid; gap: 16px; }
+.legal-defs > div { display: grid; gap: 5px; }
+.legal-defs dt { color: var(--text); font-size: 15px; font-weight: 600; }
+.legal-defs dd { margin: 0; color: var(--text-soft); font-size: 16px; line-height: 1.65; }
+
+/* Callouts carry the sentences somebody actually needs to act on — the cold
+   accent, never --signal, which belongs to actions alone. */
+.legal-note {
+  padding: 16px 20px;
+  border-left: 2px solid var(--cold);
+  background: var(--paper-lift);
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+.legal-footnote {
+  padding-top: 26px;
+  border-top: 1px solid var(--line-soft);
+  color: var(--text-mute);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.legal-footnote a { color: var(--cold); font-weight: 500; }
+
+@media (max-width: 900px) {
+  .legal-layout { grid-template-columns: 1fr; gap: 34px; }
+  .legal-toc {
+    position: static;
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .legal-toc-other { grid-auto-flow: column; justify-content: start; gap: 20px; }
+}
+
+/* ── Sitemap ───────────────────────────────────────────────── */
+
+.sitemap-grid {
+  padding-block: clamp(48px, 6vw, 82px) clamp(30px, 4vw, 50px);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(232px, 1fr));
+  gap: clamp(30px, 4vw, 56px);
+  align-items: start;
+}
+.sitemap-grid section { display: grid; gap: 13px; align-content: start; }
+.sitemap-grid h2 {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+.sitemap-grid h2 + ul { margin-bottom: 10px; }
+.sitemap-grid ul { display: grid; gap: 9px; }
+.sitemap-grid li a { color: var(--text); font-size: 15.5px; }
+.sitemap-grid li a:hover { color: var(--cold); }
+
+.sitemap-coverage p { color: var(--text-soft); font-size: 15px; line-height: 1.6; }
+.sitemap-coverage-list { color: var(--text-mute) !important; font-size: 14px !important; }
+.sitemap-machine a { color: var(--cold); font-weight: 500; }
+
+.sitemap-foot {
+  padding-block: 0 clamp(60px, 7vw, 96px);
+}
+.sitemap-foot p {
+  padding-top: 26px;
+  border-top: 1px solid var(--line-soft);
+  color: var(--text-soft);
+  font-size: 15px;
+}
+.sitemap-foot a { color: var(--cold); font-weight: 500; }
+
+/* Booking page: what happens after you press send. The most reassuring thing
+   a request form can say is what it does not leave to imagination. */
+.contact-steps { display: grid; gap: 11px; counter-reset: step; }
+.contact-steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 10px;
+  color: var(--on-dark-soft);
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+.contact-steps li::before {
+  content: counter(step);
+  color: var(--cold-soft);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  padding-top: 3px;
 }

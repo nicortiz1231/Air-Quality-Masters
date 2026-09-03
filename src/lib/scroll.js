@@ -38,3 +38,36 @@ export function scrollToY(y) {
   }
   window.scrollTo({ top: y, behavior: "smooth" });
 }
+
+/**
+ * Scroll an element into view, under the fixed masthead.
+ *
+ * Native `#anchor` jumps do not work anywhere on this site: Lenis keeps its
+ * own scroll target and reasserts it every frame, so the browser's jump is
+ * undone on the next tick. Every in-page link has to come through here.
+ *
+ * The header offset is NOT applied here. Lenis honours the target's
+ * `scroll-margin-top`, and so does scrollIntoView on the reduced-motion path,
+ * so the clearance is declared once in CSS next to the element it belongs to.
+ * Passing an offset as well lands the heading a full header further down the
+ * page than intended — measured, not guessed: with .legal-section carrying a
+ * 107px scroll-margin, an extra -103px offset overshot by exactly 107px.
+ */
+export function scrollToEl(el, { immediate = false } = {}) {
+  if (!el) return;
+
+  if (lenis) {
+    // Route content differs in height and Lenis can be holding the previous
+    // page's limits, which caps how far it will travel.
+    lenis.resize();
+    lenis.scrollTo(el, { duration: immediate ? 0 : 0.8, immediate, force: true });
+  } else {
+    el.scrollIntoView({ behavior: immediate ? "auto" : "smooth", block: "start" });
+  }
+
+  // Move the keyboard focus with the viewport. Without this a screen reader or
+  // keyboard user clicking a contents link is scrolled somewhere new while
+  // their focus stays behind in the list — the next Tab jumps them back.
+  if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+  el.focus({ preventScroll: true });
+}

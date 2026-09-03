@@ -9,6 +9,10 @@ import ServiceAreas from "./pages/ServiceAreas.jsx";
 import ServiceAreaDetail from "./pages/ServiceAreaDetail.jsx";
 import Contact from "./pages/Contact.jsx";
 import Faq from "./pages/Faq.jsx";
+import Privacy from "./pages/Privacy.jsx";
+import Terms from "./pages/Terms.jsx";
+import Accessibility from "./pages/Accessibility.jsx";
+import Sitemap from "./pages/Sitemap.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
 export default function App() {
@@ -24,6 +28,10 @@ export default function App() {
           <Route path="service-areas/:slug" element={<ServiceAreaDetail />} />
           <Route path="contact" element={<Contact />} />
           <Route path="faq" element={<Faq />} />
+          <Route path="privacy" element={<Privacy />} />
+          <Route path="terms" element={<Terms />} />
+          <Route path="accessibility" element={<Accessibility />} />
+          <Route path="sitemap" element={<Sitemap />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

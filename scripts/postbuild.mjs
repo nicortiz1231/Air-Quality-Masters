@@ -19,6 +19,8 @@ const dist = join(root, "dist");
 const { company } = await import("../src/data/company.js");
 const { services } = await import("../src/data/services.js");
 const { areas, featuredAreas } = await import("../src/data/serviceAreas.js");
+const { legalDocuments } = await import("../src/data/legal.js");
+const { FIELDS, FORM_NAME, HONEYPOT } = await import("../src/data/requestForm.js");
 
 const SITE = company.url.replace(/\/$/, "");
 
@@ -48,6 +50,16 @@ const routes = [
     description: s.summary,
   })),
 
+  ...legalDocuments.map((d) => ({
+    path: d.path, priority: "0.3", changefreq: "yearly",
+    title: `${d.title} | Air Quality Masters`,
+    description: d.description,
+  })),
+
+  { path: "/sitemap", priority: "0.3", changefreq: "monthly",
+    title: "Sitemap | Air Quality Masters",
+    description: "Every page on the Air Quality Masters site — services, service areas, company information and policies." },
+
   ...featuredAreas.map((a) => ({
     path: `/service-areas/${a.slug}`, priority: "0.7", changefreq: "monthly",
     title: `AC Repair & HVAC Service in ${a.name}, FL | Air Quality Masters`,
@@ -57,8 +69,27 @@ const routes = [
 
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+// ── Netlify Forms detection ────────────────────────────────────
+// Netlify discovers forms by parsing the deployed HTML at build time, and only
+// stores the fields it finds there. A React form alone is invisible to it — the
+// markup never exists as a file — so without this the booking form would post
+// to a form Netlify has never heard of and the request would vanish.
+//
+// The field list comes from src/data/requestForm.js, the same module the React
+// form reads, so the two cannot drift apart. Adding a field there is the only
+// edit needed.
+const detectionForm =
+  `<form name="${FORM_NAME}" data-netlify="true" data-netlify-honeypot="${HONEYPOT}" hidden>` +
+  `<input type="hidden" name="form-name" value="${FORM_NAME}" />` +
+  `<input type="text" name="${HONEYPOT}" />` +
+  FIELDS.map((f) => `<input type="text" name="${f}" />`).join("") +
+  `</form>`;
+
 // ── Per-route HTML ─────────────────────────────────────────────
-const shell = await readFile(join(dist, "index.html"), "utf8");
+let shell = await readFile(join(dist, "index.html"), "utf8");
+
+if (!shell.includes("<body>")) throw new Error("postbuild: no <body> in the built shell");
+shell = shell.replace("<body>", `<body>\n    ${detectionForm}`);
 
 for (const route of routes) {
   const canonical = `${SITE}${route.path === "/" ? "/" : route.path}`;
@@ -112,3 +143,20 @@ console.log(
   `postbuild: ${routes.length} routes prerendered, sitemap + robots written ` +
   `(${unlisted} additional service areas listed without dedicated pages)`
 );
+console.log(
+  `postbuild: Netlify form "${FORM_NAME}" declared with ${FIELDS.length} fields ` +
+  `(${FIELDS.join(", ")})`
+);
+
+// A booking form is the only thing on this site that has to work. Say out loud
+// which delivery path the build produced, so a missing key is noticed at deploy
+// time rather than by a customer who never gets a call back.
+if (process.env.VITE_WEB3FORMS_KEY) {
+  console.log("postbuild: delivery = Web3Forms (VITE_WEB3FORMS_KEY is set)");
+} else {
+  console.log(
+    "postbuild: delivery = Netlify Forms (no VITE_WEB3FORMS_KEY).\n" +
+    "           Submissions land in the Netlify dashboard. Add a notification\n" +
+    "           email under Forms → Settings, or the office will not be told."
+  );
+}

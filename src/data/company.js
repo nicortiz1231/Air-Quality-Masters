@@ -11,15 +11,20 @@
 
 export const company = {
   name: "Air Quality Masters",
+  // Registered entity name, taken from the company's own published Terms and
+  // Conditions. Used where a legal name is required — contracts, policies,
+  // the copyright line — and nowhere else, because nobody markets an "LLC".
+  legalName: "Air Quality Masters, LLC",
   shortName: "AQM",
   tagline: "Comfort Engineered, Reliability Delivered",
 
   // --- Contact -------------------------------------------------------------
-  // VERIFY: the old site published two different numbers (786-307-9286 and
-  // 786-841-6255). Only one should be the public service line.
+  // CONFIRMED: the old site published two numbers (786-307-9286 in the footer
+  // and 786-841-6255 on the home page). 786-841-6255 is the public service
+  // line. The other number must not reappear anywhere on the site.
   phone: {
-    display: "786-307-9286",
-    href: "tel:+17863079286",
+    display: "786-841-6255",
+    href: "tel:+17868416255",
   },
   email: "info@aqmasters.com", // VERIFY: old site obfuscated this behind a mailto scrape guard.
 
@@ -81,6 +86,19 @@ export const company = {
     linkedin: null,
     x: null,
   },
+
+  // --- Legal ---------------------------------------------------------------
+  // The dates the published policies were last revised. Rendered on the policy
+  // pages themselves — a policy with no date is a policy nobody maintains.
+  policiesUpdated: {
+    terms: "2025-07-02", // carried over from the company's existing published terms
+    privacy: "2026-09-03",
+    accessibility: "2026-09-03",
+  },
+
+  // How long service request details are kept before deletion. Stated in the
+  // privacy policy, so it has to be a number the office actually honours.
+  dataRetentionYears: 3,
 
   // --- Site ----------------------------------------------------------------
   url: "https://aqmasters.com",

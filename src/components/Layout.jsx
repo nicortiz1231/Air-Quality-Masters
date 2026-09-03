@@ -8,6 +8,7 @@ import ScrollToTop from "./ScrollToTop.jsx";
 import RouteTransition from "./RouteTransition.jsx";
 import useReveal from "../hooks/useReveal.js";
 import { registerLenis, unregisterLenis } from "../lib/scroll.js";
+import CursorBreeze from "./visual/CursorBreeze.jsx";
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -43,6 +44,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <div className="grain" aria-hidden="true" />
+      <CursorBreeze />
       <Footer />
       <MobileCallBar />
     </>

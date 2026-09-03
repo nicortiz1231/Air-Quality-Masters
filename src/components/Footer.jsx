@@ -3,6 +3,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { company } from "../data/company.js";
 import { services } from "../data/services.js";
 import { featuredAreas } from "../data/serviceAreas.js";
+import { legalDocuments } from "../data/legal.js";
 
 export default function Footer() {
   const hasHours = company.hours.weekdays || company.hours.saturday || company.hours.sunday;
@@ -82,8 +83,15 @@ export default function Footer() {
         )}
 
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} {company.name}</span>
-          <span>Residential + Commercial HVAC · Broward, Miami-Dade & Palm Beach</span>
+          <span>
+            © {new Date().getFullYear()} {company.legalName} · {company.address.city}, {company.address.state}
+          </span>
+          <nav className="footer-legal" aria-label="Legal">
+            {legalDocuments.map((d) => (
+              <Link key={d.slug} to={d.path}>{d.shortTitle}</Link>
+            ))}
+            <Link to="/sitemap">Sitemap</Link>
+          </nav>
         </div>
       </div>
     </footer>

@@ -42,10 +42,17 @@ appears on its own. See `GOING-LIVE.md` for what still needs verifying.
 Vite + React 19 + React Router 7. Plain CSS, no framework.
 
 - `src/App.jsx` — routes. All pages nest under `components/Layout.jsx`.
-- `src/data/` — `company.js`, `services.js`, `serviceAreas.js`, `faqs.js`.
-  These drive the nav, the footer, the sitemap and the prerendered routes.
-  **Adding a service or a featured area needs no other change** — add the entry
-  and it propagates everywhere, including `scripts/postbuild.mjs`.
+- `src/data/` — `company.js`, `services.js`, `serviceAreas.js`, `faqs.js`,
+  `legal.js`, `requestForm.js`. These drive the nav, the footer, the sitemap
+  (both `/sitemap` and `sitemap.xml`) and the prerendered routes. **Adding a
+  service or a featured area needs no other change** — add the entry and it
+  propagates everywhere, including `scripts/postbuild.mjs`.
+- `src/data/legal.js` — privacy policy, terms, accessibility statement, as
+  structured section trees rendered by `components/LegalDocument.jsx`. Same
+  rule as `company.js`: **every statement must describe what the site actually
+  does.** The policy says there are no cookies and no analytics because there
+  are none. Adding any tracker makes it false and requires editing the policy
+  in the same commit.
 - `src/lib/seo.js` — `<head>` management and `LocalBusiness` JSON-LD. Optional
   schema fields are omitted when the underlying fact is unverified, because
   structured data that contradicts the page is penalised.
@@ -133,7 +140,20 @@ scroll handler. Do not trust screenshots from that state.
 
 `window.__lenis` is exposed in dev only. Smooth scroll fights programmatic
 `window.scrollTo`, so scroll-driven behaviour cannot be tested without
-destroying the instance first.
+destroying the instance first. In a frozen automation tab Lenis's animated
+scroll never advances, because it runs on rAF — pump it by hand with a
+synchronous `for` loop calling `lenis.raf(t + i * 17)`. Do not `await` between
+frames; that times out CDP and freezes the renderer for good.
+
+**In-page `#anchor` links do not work natively anywhere on this site** — Lenis
+reasserts its own target every frame and undoes the browser's jump. Route them
+through `scrollToEl()` in `lib/scroll.js`.
+
+**Do not pass a header offset to `scrollToEl`.** Lenis honours the target's
+`scroll-margin-top`, and so does the `scrollIntoView` fallback, so the header
+clearance is declared once in CSS next to the element. Passing an offset as
+well double-counts it: `.legal-section` carries a 107px scroll-margin, and an
+additional -103px offset overshot by exactly 107px.
 
 **The hot accent (`--signal`) is for actions only** — call, submit, request.
 The anatomy diagram's active part uses a cold near-white instead, deliberately,
@@ -141,7 +161,26 @@ so the hot colour keeps meaning "act" everywhere on the site.
 
 ## Form
 
-`components/ServiceRequestForm.jsx` posts to Web3Forms via
-`VITE_WEB3FORMS_KEY`. Without the key it renders a panel pointing at the phone
-number rather than a form that fails silently. Keep that behaviour — a booking
-form that drops requests is worse than no form.
+`components/ServiceRequestForm.jsx` has three delivery paths, chosen at module
+scope by `MODE`:
+
+- **web3forms** — `VITE_WEB3FORMS_KEY` is set. Posts to Web3Forms.
+- **netlify** — production build, not on localhost. Posts urlencoded to `/`.
+- **preview** — dev server, or the production build served from localhost.
+  Validates fully, sends nothing, and says so on the confirmation screen.
+
+The localhost check is load-bearing. `npm run preview` serves the *production*
+build, so without it the Netlify branch would post to `/`, get the SPA shell
+back with a 200, and report a delivered request that went nowhere.
+
+**The invariant: no state tells someone "we've got it" when we have not.** A
+booking form that drops requests is worse than no form.
+
+Field names live in `src/data/requestForm.js` and are read by BOTH the React
+form and `scripts/postbuild.mjs`, which writes Netlify's hidden detection form
+from the same list. Netlify only stores fields it found in that markup, so a
+field added to the React form alone would be accepted by the browser, reported
+as a success, and silently dropped. Never hardcode a field name in one place.
+
+The consent checkbox is required and its wording is mirrored in the privacy
+policy's "Phone calls, texts and email" section. Change one, change the other.

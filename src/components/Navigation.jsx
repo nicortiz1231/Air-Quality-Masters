@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { ChevronDown, Menu, Phone, X } from "lucide-react";
+import AnnounceBar from "./AnnounceBar.jsx";
 import { company } from "../data/company.js";
 import { services } from "../data/services.js";
 import { featuredAreas } from "../data/serviceAreas.js";
@@ -15,20 +16,8 @@ const links = [
 export default function Navigation() {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [openGroup, setOpenGroup] = useState(null);
   const panelRef = useRef(null);
-
-  // The home hero is a dark full-bleed image, so the bar can float over it.
-  // Every other page starts on paper and needs a solid bar immediately.
-  const overHero = pathname === "/" && !scrolled;
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   // Close the drawer on navigation.
   useEffect(() => {
@@ -54,13 +43,12 @@ export default function Navigation() {
     <>
       <a className="skip-link" href="#main">Skip to content</a>
 
-      <header className={`nav${overHero ? " nav-over-hero" : ""}${scrolled ? " nav-scrolled" : ""}`}>
+      <div className="masthead">
+        <AnnounceBar />
+
+        <header className="nav">
         <Link to="/" className="brand" aria-label={`${company.name} — home`}>
-          <span className="brand-monogram" aria-hidden="true">AQM</span>
-          <span className="brand-name">
-            <strong>{company.name}</strong>
-            <small>Heating · Cooling · Air Quality</small>
-          </span>
+          {company.name}
         </Link>
 
         <nav className="nav-links" aria-label="Primary">
@@ -93,10 +81,7 @@ export default function Navigation() {
             <Phone size={15} aria-hidden="true" />
             <span>{company.phone.display}</span>
           </a>
-          <Link className="nav-request" to="/contact">
-            <span>Request Service</span>
-            <i aria-hidden="true">↗</i>
-          </Link>
+          <Link className="nav-request" to="/contact">Request Service</Link>
           <button
             type="button"
             className="menu-button"
@@ -108,7 +93,8 @@ export default function Navigation() {
             <Menu size={20} aria-hidden="true" />
           </button>
         </div>
-      </header>
+        </header>
+      </div>
 
       {/* Mobile drawer */}
       <div className={`drawer${open ? " is-open" : ""}`} aria-hidden={!open}>

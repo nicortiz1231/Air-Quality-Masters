@@ -1,7 +1,7 @@
 import { company, fullAddress } from "../data/company.js";
 
 const SITE_NAME = company.name;
-const DEFAULT_IMAGE = `${company.url}/og-image.jpg`;
+const DEFAULT_IMAGE = `${company.url}/og-image.png`;
 
 /** Set or create a <meta> tag, keyed by name or property. */
 function setMeta(key, value, attr = "name") {
@@ -30,7 +30,10 @@ function setLink(rel, href) {
  */
 export function applySeo({ title, description, path = "/", image = DEFAULT_IMAGE, noindex = false }) {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} | HVAC Service in South Florida`;
-  const canonical = `${company.url}${path === "/" ? "" : path}`;
+  // Trailing slash on the root. scripts/postbuild.mjs bakes "https://…/" into
+  // the prerendered head and the sitemap; emitting the bare origin here made
+  // the hydrated canonical disagree with the one a crawler read first.
+  const canonical = `${company.url}${path === "/" ? "/" : path}`;
 
   document.title = fullTitle;
   setMeta("description", description);

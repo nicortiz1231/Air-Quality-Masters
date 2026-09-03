@@ -11,6 +11,11 @@ export default function Contact() {
   const defaultService = params.get("service") || "";
   const hasHours = company.hours.weekdays || company.hours.saturday || company.hours.sunday;
 
+  // /contact?intent=quote comes from the "request a quote" calls to action.
+  // Same form, same office — but the page should not open by asking somebody
+  // pricing a replacement how fast they need a truck.
+  const isQuote = params.get("intent") === "quote";
+
   return (
     <>
       <Seo
@@ -20,10 +25,18 @@ export default function Contact() {
       />
 
       <PageHero
-        eyebrow="Request service"
-        title={<>Let's get it<br /><em>sorted out.</em></>}
-        lede="Send the details below and we'll come back to you to confirm a time. If your system is down right now, calling gets you scheduled faster than any form."
-        crumbs={[{ label: "Request Service" }]}
+        eyebrow={isQuote ? "Request a quote" : "Request service"}
+        title={
+          isQuote
+            ? <>Get a number<br /><em>you can hold us to.</em></>
+            : <>Let's get it<br /><em>sorted out.</em></>
+        }
+        lede={
+          isQuote
+            ? "Tell us about the property and what you are pricing. Quotes come after somebody has looked at the system — a number given over the phone without seeing the equipment is a guess, and you would be right not to trust it."
+            : "Send the details below and we'll come back to you to confirm a time. If your system is down right now, calling gets you scheduled faster than any form."
+        }
+        crumbs={[{ label: isQuote ? "Request a Quote" : "Request Service" }]}
       />
 
       <section className="section-shell contact-layout">
@@ -58,6 +71,15 @@ export default function Contact() {
             </a>
           </div>
 
+          <div className="contact-detail">
+            <span className="footer-label">What happens next</span>
+            <ol className="contact-steps">
+              <li>We read the request and call you back to confirm a time that works.</li>
+              <li>A technician diagnoses the system and measures rather than guesses.</li>
+              <li>You get the cause, the fix and the price — and you decide before any work starts.</li>
+            </ol>
+          </div>
+
           {hasHours && (
             <div className="contact-detail">
               <span className="footer-label">Hours</span>
@@ -75,7 +97,10 @@ export default function Contact() {
         </aside>
 
         <div className="contact-form-wrap" data-reveal>
-          <ServiceRequestForm defaultService={defaultService} />
+          <ServiceRequestForm
+            defaultService={defaultService}
+            defaultUrgency={isQuote ? "quote" : "soon"}
+          />
         </div>
       </section>
 

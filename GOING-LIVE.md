@@ -28,35 +28,90 @@ could not confirm. Nothing that is `null` appears anywhere on the site.
 
 **Look the licence up here:** https://www.myfloridalicense.com/wl11.asp
 
-### Two things to resolve before launch
+### Settled
 
-1. **The phone number.** The old site published two: `786-307-9286` and
-   `786-841-6255`. Only one is in the new site (`786-307-9286`). Confirm which
-   is the real service line — two numbers on one site reads as careless, and a
-   dead number is worse.
-2. **The email address.** `info@aqmasters.com` is inferred, not confirmed. The
-   old site hid it behind a scrape guard. Verify it receives mail.
+- **The phone number.** Confirmed as `786-841-6255` — the number the old home
+  page published. `786-307-9286` has been removed from the site entirely.
+- **The legal entity.** `Air Quality Masters, LLC` — taken from the company's
+  own published Terms and Conditions. It appears in the footer copyright and
+  in the policy pages, and nowhere in marketing copy.
+
+### Still to resolve
+
+1. **The email address.** `info@aqmasters.com` is inferred, not confirmed. The
+   old site hid it behind a scrape guard. Verify it receives mail — it is
+   printed on all three policy pages as a contact route.
+2. **The data retention period.** `company.dataRetentionYears` is set to `3`
+   and the privacy policy states it as a promise. Confirm the office actually
+   keeps service records that long, and change the number if not. A retention
+   period the business does not honour is worse than none.
 
 ---
 
 ## 2. Connect the request form — REQUIRED
 
-Until this is done the form renders an honest "not connected yet" panel
-pointing at the phone number. It never silently swallows a submission.
+The form has two delivery paths and picks automatically. **On a Netlify deploy
+it works with no configuration at all** — but you must turn on the
+notification, or submissions pile up in a dashboard nobody opens.
+
+| Where | Path | What is needed |
+| --- | --- | --- |
+| Netlify, no key | **Netlify Forms** | Nothing to build. Set the notification email (below). |
+| Anywhere, key set | **Web3Forms** | `VITE_WEB3FORMS_KEY` at build time. Takes precedence. |
+| `npm run dev` / localhost | **Preview** | Nothing. Validates fully, delivers nothing, and says so on the confirmation screen. |
+
+Every build prints which path it produced. Read that line on the deploy log.
+
+### Option A — Netlify Forms (zero config, recommended to start)
+
+`scripts/postbuild.mjs` writes a hidden detection form into every prerendered
+page, built from the field list in `src/data/requestForm.js`, so Netlify knows
+the form and every one of its fields.
+
+1. Deploy. Submit one real test request from the live URL.
+2. **Netlify → Forms** — confirm the submission appears with all 11 fields.
+3. **Netlify → Forms → Settings → Form notifications → Add notification →
+   Email notification.** Point it at the office inbox.
+   **Without this step nothing tells anyone a request arrived.**
+
+### Option B — Web3Forms (delivers straight to an inbox, host-independent)
 
 1. Sign up free at https://web3forms.com and enter the destination inbox.
 2. Copy the access key.
-3. `cp .env.example .env` and set `VITE_WEB3FORMS_KEY=<key>`.
+3. `cp .env.example .env` and set `VITE_WEB3FORMS_KEY=<key>` for local work.
 4. Add the same variable in **Netlify → Site settings → Environment variables**
-   (it must be present at *build* time — Vite inlines it into the bundle).
+   — it must be present at *build* time, because Vite inlines it into the
+   bundle. Redeploy after adding it.
 5. Submit a real test request and confirm it lands in the inbox.
 
 The key is safe to expose in client-side code; it is tied to the destination
 address, not to an account.
 
-**Form states, all verified working:** no key → fallback panel · invalid input
-→ inline field errors · network failure → error banner with the phone number ·
-success → confirmation panel.
+### What the form collects
+
+Name, phone, email, **street address**, city, property type, service, urgency,
+preferred contact method, description, and an explicit consent checkbox. The
+street address is required — a technician cannot be dispatched to a city.
+
+The consent checkbox is not decoration. It is the record that the customer
+agreed to be contacted by phone, text or email, which is what the TCPA asks
+for and what an ad platform will ask to see. Its wording matches the "Phone
+calls, texts and email" section of the privacy policy; change one and change
+the other.
+
+### Adding a field later
+
+Add the name to `FIELDS` in `src/data/requestForm.js` and add the input to
+`ServiceRequestForm.jsx`. Nothing else. postbuild regenerates the Netlify
+detection form from the same list, which is what stops a new field from being
+accepted by the browser and then silently dropped by Netlify.
+
+**Form states, all verified in a browser:** empty submit → six inline field
+errors, focus moved to the first bad field · short phone / malformed email →
+specific messages · "No cooling right now" → escalation panel with the phone
+number · valid submit → confirmation panel, wording adapts to urgency · local
+preview → confirmation plus an explicit "nothing was sent" note · network
+failure → error banner with the phone number.
 
 ---
 
@@ -153,10 +208,58 @@ propagated and the new one is confirmed working.
 - **Test the structured data** — https://search.google.com/test/rich-results
   against the live URL. It should find `HVACBusiness` on every page, `Service`
   on service and area pages, and `FAQPage` on `/faq`.
-- **Redirects from the old site.** The old URLs (`/contact-us`, `/about`,
-  `/services`, `/estimates`, `/locations`) should 301 to their new equivalents
-  so existing links and search rankings carry over. Add them to `netlify.toml`
-  once you know the exact old paths.
+- **Redirects from the old site — already configured.** The live old paths
+  were probed and mapped in `netlify.toml`: `/home682032` → `/`, `/about-us`
+  and `/team` → `/about`, `/contact-us` and `/estimates` → `/contact`,
+  `/locations` → `/service-areas`, `/privacy-policy`, `/terms-conditions` and
+  `/terms-and-conditions` → `/terms`. Spot-check a few after cutover.
+- **Check the 404 actually 404s.** `netlify.toml` serves the app shell with a
+  **404 status** for unmatched paths, not the usual 200 — a soft 404 gets the
+  nonexistent URL indexed. `curl -I https://aqmasters.com/nope` should say
+  `HTTP/2 404`. If a real page ever returns 404, it is missing from the route
+  list in `scripts/postbuild.mjs`.
+- **Check the Content-Security-Policy did not break anything.** `netlify.toml`
+  ships a CSP scoped to Google Fonts and Web3Forms. Load the deployed site with
+  the console open; a blocked resource is silent in the UI but loud in the
+  console. If you add any third party — analytics, a chat widget, a review
+  embed — it must be added to the policy or it will not load.
+
+---
+
+## 7. Have the policies reviewed — REQUIRED before relying on them
+
+Three documents now exist, all driven from `src/data/legal.js` and linked in
+the footer of every page:
+
+| Page | Source |
+| --- | --- |
+| `/terms` | The company's own published Terms and Conditions, last revised 2 July 2025, reproduced faithfully. |
+| `/privacy` | **Written from scratch.** See below. |
+| `/accessibility` | Written from what the code actually does. |
+
+**The old site had no privacy policy.** `aqmasters.com/privacy-policy` and
+`aqmasters.com/terms-conditions` serve the byte-identical Terms and Conditions
+document — the privacy link has been pointing at the wrong page for as long as
+it has existed. That is why the old `/privacy-policy` URL redirects to `/terms`
+and not to `/privacy`: anyone following an old link lands on the document they
+actually read.
+
+The new privacy policy describes what this site genuinely does — no cookies, no
+analytics, no advertising trackers, two third parties (Google Fonts and the
+form relay). It is accurate as written. Two caveats:
+
+1. **None of this is legal advice, and no attorney has reviewed it.** Have one
+   read all three before launch.
+2. **It stops being accurate the moment anything is added.** Adding Google
+   Analytics, a Meta pixel, a chat widget or a review embed makes the "no
+   cookies, no tracking" section false, and a cookie banner becomes necessary.
+   If you add tracking, update `/privacy` in the same commit.
+
+Two changes were made to the terms, both deliberate: the closing "contact us"
+pointer referenced a URL serving the wrong document, and a scope section was
+added stating that these terms cover the **website** and that HVAC work is
+governed by the signed work order. Without that, the "as is, no warranties"
+clause reads as disclaiming warranties on the actual work.
 
 ---
 
