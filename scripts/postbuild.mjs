@@ -12,6 +12,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadEnv } from "vite";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
@@ -143,7 +144,14 @@ console.log(
   `postbuild: ${routes.length} routes prerendered, sitemap + robots written ` +
   `(${unlisted} additional service areas listed without dedicated pages)`
 );
-if (process.env.VITE_WEB3FORMS_KEY) {
+// Read the key the way Vite did, not off process.env. Vite loads .env files
+// itself, so a plain process.env lookup reported "no key" on every local build
+// that in fact had one inlined — a warning that contradicted the bundle it had
+// just produced. loadEnv also picks up real environment variables, so the
+// check stays correct on Vercel, where the key arrives that way.
+const env = loadEnv("production", root, "VITE_");
+
+if (env.VITE_WEB3FORMS_KEY) {
   console.log("postbuild: form delivery = Web3Forms (VITE_WEB3FORMS_KEY is set)");
 } else {
   console.log(

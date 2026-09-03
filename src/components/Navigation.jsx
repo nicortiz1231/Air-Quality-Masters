@@ -11,6 +11,7 @@ const links = [
   { to: "/service-areas", label: "Service Areas", children: featuredAreas.map((a) => ({ to: `/service-areas/${a.slug}`, label: a.name })) },
   { to: "/about", label: "About" },
   { to: "/faq", label: "FAQ" },
+  { to: "/contact", label: "Contact" },
 ];
 
 export default function Navigation() {
@@ -48,7 +49,9 @@ export default function Navigation() {
 
         <header className="nav">
         <Link to="/" className="brand" aria-label={`${company.name} — home`}>
-          {company.name}
+          {/* alt="" — the link already carries the accessible name, so the
+              image would otherwise be announced twice. */}
+          <img src="/aqm-logo.png" alt="" width="394" height="152" />
         </Link>
 
         <nav className="nav-links" aria-label="Primary">
@@ -133,7 +136,6 @@ export default function Navigation() {
                 <Link key={link.to} to={link.to}>{link.label}</Link>
               )
             )}
-            <Link to="/contact">Contact</Link>
           </nav>
 
           <div className="drawer-foot">

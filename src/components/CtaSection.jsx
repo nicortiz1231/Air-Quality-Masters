@@ -21,7 +21,7 @@ export default function CtaSection({
             <span>{company.phone.display}</span>
           </a>
           <Link
-            className="button button-ghost-light"
+            className="button button-primary"
             to={service ? `/contact?service=${encodeURIComponent(service)}` : "/contact"}
           >
             <span>Request service online</span>

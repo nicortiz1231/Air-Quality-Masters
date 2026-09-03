@@ -78,7 +78,8 @@ function validate(v) {
   return e;
 }
 
-/** Flat key/value payload. Keys match FIELDS so Netlify stores every one. */
+/** Flat key/value payload. Keys match FIELDS, so the notification email lists
+    every field under the name the form declares. */
 function payload(v) {
   return {
     name: v.name.trim(),
@@ -200,8 +201,8 @@ export default function ServiceRequestForm({ defaultService = "", defaultUrgency
         {MODE === "preview" && (
           <p className="form-preview-note">
             <strong>Local preview:</strong> the form ran end to end and validated, but nothing was
-            sent — there is no delivery key on this machine and no Netlify to receive it. Deployed,
-            this submission would be delivered. See <code>.env.example</code>.
+            sent — there is no delivery key on this machine. With one set, this submission would be
+            delivered to the office inbox. See <code>.env.example</code>.
           </p>
         )}
 

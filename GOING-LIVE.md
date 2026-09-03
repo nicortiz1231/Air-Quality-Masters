@@ -57,39 +57,42 @@ could not confirm. Nothing that is `null` appears anywhere on the site.
 
 ## 2. Connect the request form — REQUIRED
 
-The form has two delivery paths and picks automatically. **On a Netlify deploy
-it works with no configuration at all** — but you must turn on the
-notification, or submissions pile up in a dashboard nobody opens.
+The form delivers through **Web3Forms**, and `VITE_WEB3FORMS_KEY` is the only
+thing that makes it work. There is no host-provided fallback: the site is on
+Vercel, which has no equivalent of Netlify Forms.
 
 | Where | Path | What is needed |
 | --- | --- | --- |
-| Netlify, no key | **Netlify Forms** | Nothing to build. Set the notification email (below). |
-| Anywhere, key set | **Web3Forms** | `VITE_WEB3FORMS_KEY` at build time. Takes precedence. |
+| Anywhere, key set | **Web3Forms** | `VITE_WEB3FORMS_KEY` at build time. |
+| Production, no key | **Unconfigured** | No form renders at all — a panel points at the phone and email. Deliberate. |
 | `npm run dev` / localhost | **Preview** | Nothing. Validates fully, delivers nothing, and says so on the confirmation screen. |
 
 Every build prints which path it produced. Read that line on the deploy log.
 
-### Option A — Netlify Forms (zero config, recommended to start)
+### Setting it up
 
-`scripts/postbuild.mjs` writes a hidden detection form into every prerendered
-page, built from the field list in `src/data/requestForm.js`, so Netlify knows
-the form and every one of its fields.
-
-1. Deploy. Submit one real test request from the live URL.
-2. **Netlify → Forms** — confirm the submission appears with all 11 fields.
-3. **Netlify → Forms → Settings → Form notifications → Add notification →
-   Email notification.** Point it at the office inbox.
-   **Without this step nothing tells anyone a request arrived.**
-
-### Option B — Web3Forms (delivers straight to an inbox, host-independent)
-
-1. Sign up free at https://web3forms.com and enter the destination inbox.
+1. Sign up free at https://web3forms.com and enter the destination inbox —
+   **info@mail.aqmasters.com**. The key is emailed to that address, which is
+   how the inbox is verified.
 2. Copy the access key.
 3. `cp .env.example .env` and set `VITE_WEB3FORMS_KEY=<key>` for local work.
-4. Add the same variable in **Netlify → Site settings → Environment variables**
-   — it must be present at *build* time, because Vite inlines it into the
-   bundle. Redeploy after adding it.
+4. Add the same variable in **Vercel → Project → Settings → Environment
+   Variables** — it must be present at *build* time, because Vite inlines it
+   into the bundle. **Redeploy after adding it**; changing the variable without
+   a rebuild leaves the old key live in the deployed JS.
 5. Submit a real test request and confirm it lands in the inbox.
+
+### Changing where requests are delivered
+
+**The key IS the destination.** Web3Forms binds the recipient to the access key
+and offers no per-submission recipient override — there is no `to` field, and
+`replyto` only sets who a reply goes back to (the customer). Nothing in `src/`
+can move a submission to a different inbox.
+
+So to redirect requests, issue a **new key** against the new address and
+replace the value in both `.env` and Vercel, then redeploy. Verify with a real
+test submission before trusting it; a stale key fails silently from the
+office's point of view, because the sender still sees the success screen.
 
 The key is safe to expose in client-side code; it is tied to the destination
 address, not to an account.

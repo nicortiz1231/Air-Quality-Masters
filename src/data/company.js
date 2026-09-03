@@ -32,18 +32,22 @@ export const company = {
   // never be published on the site.
   email: "info@mail.aqmasters.com",
 
+  // There is no office open to visitors — the registered street address is the
+  // owner's home, so it is deliberately NOT published. Same rule as every other
+  // null here: absent means the UI renders nothing, not that it is missing.
+  // Only set street/suite/zip/mapsUrl once there is a real commercial premises.
+  // City and state stay: they place the business for a customer choosing a
+  // local contractor, and they are not a doorstep.
   address: {
-    street: "3405 NW 44th St",
-    suite: "Suite #106",
+    street: null,
+    suite: null,
     city: "Oakland Park",
     state: "FL",
-    zip: "33309",
+    zip: null,
     country: "US",
-    // VERIFY: pull exact coordinates from the Google Business Profile listing.
     lat: null,
     lng: null,
-    mapsUrl:
-      "https://www.google.com/maps/search/?api=1&query=3405+NW+44th+St+Suite+106+Oakland+Park+FL+33309",
+    mapsUrl: null,
   },
 
   // --- Credentials ---------------------------------------------------------
@@ -113,14 +117,24 @@ export const company = {
   serviceType: "HVAC Contractor",
 };
 
-/** Full one-line address, e.g. for schema and footers. */
+/**
+ * Full one-line address, e.g. for schema and legal documents.
+ *
+ * Collapses to just "Oakland Park, FL" while the street address is withheld,
+ * so nothing renders a dangling comma or a stray ZIP-shaped gap.
+ */
 export const fullAddress = [
   company.address.street,
   company.address.suite,
-  `${company.address.city}, ${company.address.state} ${company.address.zip}`,
+  [`${company.address.city}, ${company.address.state}`, company.address.zip]
+    .filter(Boolean)
+    .join(" "),
 ]
   .filter(Boolean)
   .join(", ");
+
+/** True only when there is a street address we are willing to publish. */
+export const hasPublicAddress = Boolean(company.address.street);
 
 /** Years in business, or null while foundedYear is unverified. */
 export const yearsInBusiness = company.foundedYear

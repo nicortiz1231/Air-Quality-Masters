@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { company } from "../data/company.js";
+import { company, hasPublicAddress } from "../data/company.js";
 import { services } from "../data/services.js";
 import { featuredAreas } from "../data/serviceAreas.js";
 import { legalDocuments } from "../data/legal.js";
@@ -21,7 +21,7 @@ export default function Footer() {
             <a className="button button-primary" href={company.phone.href}>
               <span>Call {company.phone.display}</span>
             </a>
-            <Link className="button button-ghost-light" to="/contact">
+            <Link className="button button-primary" to="/contact">
               <span>Request Service</span>
             </Link>
           </div>
@@ -32,13 +32,15 @@ export default function Footer() {
             <span className="footer-label">Contact</span>
             <a href={company.phone.href}><Phone size={14} aria-hidden="true" /> {company.phone.display}</a>
             <a href={`mailto:${company.email}`}><Mail size={14} aria-hidden="true" /> {company.email}</a>
-            <a href={company.address.mapsUrl} target="_blank" rel="noreferrer">
-              <MapPin size={14} aria-hidden="true" />
-              <span>
-                {company.address.street} {company.address.suite}<br />
-                {company.address.city}, {company.address.state} {company.address.zip}
-              </span>
-            </a>
+            {hasPublicAddress && (
+              <a href={company.address.mapsUrl} target="_blank" rel="noreferrer">
+                <MapPin size={14} aria-hidden="true" />
+                <span>
+                  {company.address.street} {company.address.suite}<br />
+                  {company.address.city}, {company.address.state} {company.address.zip}
+                </span>
+              </a>
+            )}
           </div>
 
           <div>

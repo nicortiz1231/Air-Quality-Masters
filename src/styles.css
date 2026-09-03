@@ -205,6 +205,7 @@ h1 em, h2 em {
 
 .button {
   min-height: 54px;
+  border-radius: 999px;
   padding: 0 8px 0 22px;
   display: inline-flex;
   align-items: center;
@@ -319,14 +320,15 @@ h1 em, h2 em {
   color: var(--ink);
 }
 
-/* Wordmark, not a lockup. The circle monogram and the three-word
-   descriptor under the name were two extra objects saying what the
-   name already says. */
-.brand {
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -.02em;
-  line-height: .98;
+/* The company's own AQM lockup. Height is capped well inside --bar (53px)
+   so the bar keeps its air; width follows the intrinsic aspect. The file is
+   white-backed rather than transparent, which is invisible here because the
+   bar is #ffffff — worth remembering before reusing it on a dark surface. */
+.brand { display: flex; align-items: center; }
+.brand img {
+  height: 38px;
+  width: auto;
+  display: block;
 }
 
 /* Taken out of flow and centred on the bar, so the row stays symmetrical
@@ -407,7 +409,8 @@ h1 em, h2 em {
 
 .nav-request {
   height: 42px;
-  padding: 0 20px;
+  border-radius: 999px;
+  padding: 0 22px;
   display: inline-flex;
   align-items: center;
   background: var(--signal);
@@ -525,6 +528,7 @@ h1 em, h2 em {
 }
 .drawer-cta {
   min-height: 54px;
+  border-radius: 999px;
   display: grid; place-items: center;
   background: var(--signal);
   color: #fff;
@@ -1965,7 +1969,7 @@ h1 em, h2 em {
   body { padding-bottom: 58px; }
   .call-bar { display: flex; }
 
-  .brand { font-size: 22px; }
+  .brand img { height: 32px; }
   .nav-phone span { display: none; }
   .nav-request { display: none; }
   .nav-actions { gap: 8px; }

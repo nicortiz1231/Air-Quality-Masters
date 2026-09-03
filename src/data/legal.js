@@ -32,13 +32,15 @@
  *   { note: "string" }    → a callout, for the things people actually need
  */
 
-import { company, fullAddress } from "./company.js";
+import { company, fullAddress, hasPublicAddress } from "./company.js";
 
 const CONTACT_BLOCK = [
   { defs: [
     ["Phone", company.phone.display],
     ["Email", company.email],
-    ["Post", `${company.legalName}, ${fullAddress}`],
+    // No "Post" row while the street address is withheld — see company.js.
+    // Offering an address people cannot write to is worse than offering none.
+    ...(hasPublicAddress ? [["Post", `${company.legalName}, ${fullAddress}`]] : []),
   ] },
 ];
 
@@ -256,6 +258,7 @@ export const termsOfService = {
           defs: [
             ["Affiliate", "An entity that controls, is controlled by, or is under common control with a party, where “control” means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for the election of directors or other managing authority."],
             ["Company", `${company.legalName}, ${fullAddress}, referred to as “the Company”, “We”, “Us” or “Our”.`],
+            ["Country", "Florida, United States."],
             ["Device", "Any device that can access the Service, such as a computer, a phone or a tablet."],
             ["Service", "The Site."],
             ["Third-party Social Media Service", "Any services or content, including data, information, products or services, provided by a third party that may be displayed, included or made available by the Service."],
@@ -346,6 +349,14 @@ export const termsOfService = {
     },
 
     {
+      id: "eu-users",
+      heading: "For European Union (EU) users",
+      body: [
+        "If you are a European Union consumer, you will benefit from any mandatory provisions of the law of the country in which you are resident.",
+      ],
+    },
+
+    {
       id: "compliance",
       heading: "United States legal compliance",
       body: [
@@ -359,6 +370,14 @@ export const termsOfService = {
       body: [
         "If any provision of these Terms is held to be unenforceable or invalid, that provision will be changed and interpreted to accomplish its objectives to the greatest extent possible under applicable law, and the remaining provisions will continue in full force and effect.",
         "Except as provided in these Terms, a failure to exercise a right or to require performance of an obligation shall not affect a party's ability to exercise that right or require that performance at any time afterwards, nor shall the waiver of a breach constitute a waiver of any subsequent breach.",
+      ],
+    },
+
+    {
+      id: "translation",
+      heading: "Translation",
+      body: [
+        "These Terms and Conditions may have been translated if we have made them available to you on our Service. You agree that the original English text shall prevail in the case of a dispute.",
       ],
     },
 

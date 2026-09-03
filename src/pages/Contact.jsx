@@ -4,7 +4,7 @@ import Seo from "../components/Seo.jsx";
 import PageHero from "../components/PageHero.jsx";
 import ServiceRequestForm from "../components/ServiceRequestForm.jsx";
 import TrustBadges from "../components/TrustBadges.jsx";
-import { company } from "../data/company.js";
+import { company, hasPublicAddress } from "../data/company.js";
 
 export default function Contact() {
   const [params] = useSearchParams();
@@ -57,19 +57,21 @@ export default function Contact() {
             </a>
           </div>
 
-          <div className="contact-detail">
-            <span className="footer-label">Office</span>
-            <p className="contact-address">
-              <MapPin size={15} aria-hidden="true" />
-              <span>
-                {company.address.street} {company.address.suite}<br />
-                {company.address.city}, {company.address.state} {company.address.zip}
-              </span>
-            </p>
-            <a href={company.address.mapsUrl} target="_blank" rel="noreferrer">
-              Open in Google Maps →
-            </a>
-          </div>
+          {hasPublicAddress && (
+            <div className="contact-detail">
+              <span className="footer-label">Office</span>
+              <p className="contact-address">
+                <MapPin size={15} aria-hidden="true" />
+                <span>
+                  {company.address.street} {company.address.suite}<br />
+                  {company.address.city}, {company.address.state} {company.address.zip}
+                </span>
+              </p>
+              <a href={company.address.mapsUrl} target="_blank" rel="noreferrer">
+                Open in Google Maps →
+              </a>
+            </div>
+          )}
 
           <div className="contact-detail">
             <span className="footer-label">What happens next</span>

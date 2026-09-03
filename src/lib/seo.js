@@ -72,12 +72,17 @@ export function localBusinessSchema() {
     url: company.url,
     telephone: company.phone.display,
     email: company.email,
+    // streetAddress and postalCode are omitted while the address is withheld.
+    // A PostalAddress carrying only locality/region is valid; inventing or
+    // half-filling one is what gets structured data penalised.
     address: {
       "@type": "PostalAddress",
-      streetAddress: `${company.address.street} ${company.address.suite}`.trim(),
+      ...(company.address.street && {
+        streetAddress: `${company.address.street} ${company.address.suite || ""}`.trim(),
+      }),
       addressLocality: company.address.city,
       addressRegion: company.address.state,
-      postalCode: company.address.zip,
+      ...(company.address.zip && { postalCode: company.address.zip }),
       addressCountry: company.address.country,
     },
     areaServed: ["Broward County", "Miami-Dade County", "Palm Beach County"].map((n) => ({

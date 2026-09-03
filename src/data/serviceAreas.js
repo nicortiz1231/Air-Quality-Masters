@@ -19,7 +19,7 @@ export const areas = [
     featured: true,
     headquarters: true,
     intro:
-      "Our office is in Oakland Park, on NW 44th Street. It is the shortest drive we make, and the area where we hold the most service history.",
+      "Oakland Park is our home base. It is the shortest drive we make, and the area where we hold the most service history.",
     context: [
       "Much of Oakland Park's housing stock dates to the 1950s and 60s, which means a lot of original duct work running through hot, unconditioned attics and a lot of systems that were replaced without the duct system ever being re-evaluated.",
       "Properties east of Dixie Highway sit close enough to the coast that salt exposure shows up on condenser cabinets and coils years earlier than it would inland.",
