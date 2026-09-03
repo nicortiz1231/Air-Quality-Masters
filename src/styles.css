@@ -3026,23 +3026,31 @@ h1 em, h2 em {
 .sitemap-foot a { color: var(--cold); font-weight: 500; }
 
 /* Booking page: what happens after you press send. The most reassuring thing
-   a request form can say is what it does not leave to imagination. */
+   a request form can say is what it does not leave to imagination.
+
+   These are the on-LIGHT tokens, not the on-dark ones. The list was written
+   for the dark request panel and kept those colours when it moved into the
+   contact column, which is --paper: white-ish text on a white-ish ground, so
+   the one part of the page that explains what happens to your details was the
+   one part you could not read. --text-soft and --cold are what every other
+   numbered list on a light surface uses. */
 .contact-steps { display: grid; gap: 11px; counter-reset: step; }
 .contact-steps li {
   counter-increment: step;
   display: grid;
   grid-template-columns: 22px 1fr;
   gap: 10px;
-  color: var(--on-dark-soft);
-  font-size: 14.5px;
-  line-height: 1.5;
+  color: var(--text-soft);
+  font-size: 15px;
+  line-height: 1.55;
 }
 .contact-steps li::before {
   content: counter(step);
-  color: var(--cold-soft);
+  color: var(--cold);
   font-size: 12px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  padding-top: 3px;
+  padding-top: 4px;
 }
 
 /* ============================================================
