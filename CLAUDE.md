@@ -164,23 +164,21 @@ so the hot colour keeps meaning "act" everywhere on the site.
 `components/ServiceRequestForm.jsx` has three delivery paths, chosen at module
 scope by `MODE`:
 
-- **web3forms** — `VITE_WEB3FORMS_KEY` is set. Posts to Web3Forms.
-- **netlify** — production build, not on localhost. Posts urlencoded to `/`.
-- **preview** — dev server, or the production build served from localhost.
-  Validates fully, sends nothing, and says so on the confirmation screen.
+- **web3forms** — `VITE_WEB3FORMS_KEY` is set. Posts to Web3Forms. The only
+  path that actually delivers.
+- **preview** — no key, running locally. Validates fully, sends nothing, and
+  says so on the confirmation screen.
+- **unconfigured** — no key, in production. Renders no form at all: a panel
+  points at the phone number and email instead.
 
-The localhost check is load-bearing. `npm run preview` serves the *production*
-build, so without it the Netlify branch would post to `/`, get the SPA shell
-back with a 200, and report a delivered request that went nowhere.
+There was a Netlify Forms path. It is gone — the site is on Vercel, which has
+no equivalent (Netlify parsed a hidden form out of the deployed HTML and stored
+submissions itself). **Without `VITE_WEB3FORMS_KEY` the site has no working
+booking form**, by design, because the alternative is taking details we cannot
+deliver.
 
 **The invariant: no state tells someone "we've got it" when we have not.** A
 booking form that drops requests is worse than no form.
-
-Field names live in `src/data/requestForm.js` and are read by BOTH the React
-form and `scripts/postbuild.mjs`, which writes Netlify's hidden detection form
-from the same list. Netlify only stores fields it found in that markup, so a
-field added to the React form alone would be accepted by the browser, reported
-as a success, and silently dropped. Never hardcode a field name in one place.
 
 The consent checkbox is required and its wording is mirrored in the privacy
 policy's "Phone calls, texts and email" section. Change one, change the other.

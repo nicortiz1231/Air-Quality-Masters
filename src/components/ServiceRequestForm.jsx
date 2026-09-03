@@ -17,29 +17,28 @@ const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 /**
  * How this submission actually gets delivered.
  *
- *   web3forms — a delivery key is configured. Posts to Web3Forms, which relays
- *               to the office inbox. Works on any host.
- *   netlify   — no key, but we are running the production build, which is
- *               served from Netlify. Posts to Netlify Forms, which is wired up
- *               by the hidden detection form postbuild writes into every page.
- *   preview   — no key, and nowhere to deliver to. The form runs end to end
- *               and says plainly that nothing was sent, rather than reporting
- *               a success that did not happen.
+ *   web3forms   — a delivery key is configured. Posts to Web3Forms, which
+ *                 relays to the office inbox. Works on any host.
+ *   preview     — no key, running locally. The form validates end to end and
+ *                 says plainly that nothing was sent, rather than reporting a
+ *                 success that did not happen.
+ *   unconfigured— no key, in production. There is nowhere to deliver to, so no
+ *                 form is rendered at all: a panel points at the phone instead.
  *
- * The localhost check matters more than it looks. `npm run preview` serves the
- * PRODUCTION build, so without it the Netlify branch would post to "/", get the
- * SPA shell back with a 200, and report a delivered request that went nowhere —
- * the exact silent-drop failure this component exists to prevent.
+ * There was a Netlify Forms path here. It is gone with the move to Vercel,
+ * which has no equivalent — the host parsed a hidden form out of the deployed
+ * HTML and stored submissions itself. Leaving that branch in would have posted
+ * to "/", received the SPA shell or a 405, and shown an error on every send.
  *
- * The rule this encodes is the same one as the rest of the site: a booking
- * form that drops requests is worse than no booking form. There is no state in
+ * The rule this encodes is the one the whole site is built on: a booking form
+ * that drops requests is worse than no booking form. There is no state in
  * which a person is told "we've got it" when we have not.
  */
 const isLocal =
   typeof location !== "undefined" &&
   /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
 
-const MODE = ACCESS_KEY ? "web3forms" : import.meta.env.PROD && !isLocal ? "netlify" : "preview";
+const MODE = ACCESS_KEY ? "web3forms" : isLocal || import.meta.env.DEV ? "preview" : "unconfigured";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const digits = (s) => s.replace(/\D/g, "");
@@ -153,24 +152,40 @@ export default function ServiceRequestForm({ defaultService = "", defaultUrgency
                 ...data,
               }),
             })
-          : await fetch("/", {
-              method: "POST",
-              headers: { "Content-Type": "application/x-www-form-urlencoded" },
-              body: new URLSearchParams({ "form-name": FORM_NAME, ...data }).toString(),
-            });
+          : null;
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res || !res.ok) throw new Error(`HTTP ${res ? res.status : "no transport"}`);
 
-      if (MODE === "web3forms") {
-        const json = await res.json();
-        if (!json.success) throw new Error(json.message || "Submission rejected");
-      }
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message || "Submission rejected");
 
       setStatus("success");
     } catch {
       setStatus("error");
     }
   };
+
+  // Never render a form that cannot deliver. Without a key in production the
+  // honest thing is to send people to the phone rather than take details we
+  // have nowhere to send.
+  if (MODE === "unconfigured") {
+    return (
+      <div className="form-panel form-unconfigured" role="status">
+        <AlertCircle size={22} aria-hidden="true" />
+        <h3>Online requests aren't connected yet</h3>
+        <p>
+          The booking form is ready but needs its delivery key before it can send anything.
+          Rather than take your details and drop them, we'd rather you reached us directly —
+          both of these come straight to the office.
+        </p>
+        <a className="button button-primary" href={company.phone.href}>
+          <Phone size={16} aria-hidden="true" />
+          <span>Call {company.phone.display}</span>
+        </a>
+        <a className="form-alt-link" href={`mailto:${company.email}`}>{company.email}</a>
+      </div>
+    );
+  }
 
   if (status === "success") {
     return (
@@ -209,14 +224,9 @@ export default function ServiceRequestForm({ defaultService = "", defaultUrgency
       className="request-form"
       name={FORM_NAME}
       method="POST"
-      data-netlify="true"
-      data-netlify-honeypot={HONEYPOT}
       onSubmit={handleSubmit}
       noValidate
     >
-      {/* Netlify reads this back on submit to know which form it belongs to. */}
-      <input type="hidden" name="form-name" value={FORM_NAME} />
-
       {/* Honeypot — off-screen, not display:none, so bots that check computed
           style still fill it in. Never shown to a person. */}
       <p className="hp-field" aria-hidden="true">
