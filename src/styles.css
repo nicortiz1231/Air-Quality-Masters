@@ -53,6 +53,9 @@
   --head: calc(var(--announce) + var(--bar));
   /* Full-bleed gutters, not the site's centred --pad: 16 / 20 / 32 / 40. */
   --nav-gutter: 16px;
+  /* The fixed mobile call bar's real height, inset included. Declared once so
+     the bar and the space the page reserves for it cannot drift apart. */
+  --call-bar: calc(58px + env(safe-area-inset-bottom));
 
   --ease: cubic-bezier(.22,.61,.36,1);
 }
@@ -538,6 +541,10 @@ h1 em, h2 em {
 
 /* ── Sticky mobile call bar ────────────────────────────────── */
 
+/* The bar's height and the room the page keeps for it both come from
+   --call-bar. They used to be written separately — the bar padded itself out by
+   the safe-area inset while the body reserved a flat 58px — so on any phone
+   with a home indicator the last 34px of the footer sat underneath the bar. */
 .call-bar {
   position: fixed;
   z-index: 90;
@@ -851,6 +858,49 @@ h1 em, h2 em {
   .hero-word span + span { margin-left: .4em; }
 }
 
+/* A phone on its side. The frame is capped at the viewport, so here that cap —
+   not the aspect ratio — sets the height, and it leaves barely 270px for three
+   stacked blocks sized off WIDTH, which is now the large dimension. The word's
+   row is `minmax(0, 1fr)` and the word is bottom-aligned in it, so when the
+   stack did not fit the overflow went UPWARD: the headline climbed out of the
+   frame and finished underneath the fixed header, clipped off the top of the
+   screen on a 375px-tall viewport. Everything below sizes the stack to the
+   height that actually exists instead.
+
+   Keyed on height rather than a width breakpoint because that is the dimension
+   that runs out; a landscape tablet is 768px tall and keeps the full layout. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .hero-content { padding-block: 14px 12px; }
+
+  /* vh, deliberately, and only here: in this one orientation the constraint
+     genuinely is the window's height, not the column the type sits in. */
+  .hero-word {
+    font-size: min(clamp(40px, 6.4vw, 92px), 17vh);
+    margin-bottom: .12em;
+  }
+
+  /* The scale keeps both temperatures — they are the hero's whole idea — and
+     loses only the caption qualifying them, which is repeated in the plot
+     further down the page. */
+  .hero-gauge { gap: 0 12px; padding-bottom: 8px; }
+  .hero-gauge figcaption { display: none; }
+  .hero-gauge-value { font-size: clamp(18px, 2.4vh, 24px); }
+  .hero-gauge-label, .hero-gauge-sub { font-size: 10.5px; }
+  .hero-gauge-rule { margin-bottom: 10px; }
+
+  /* The foot stacks below 699px because a narrow column cannot hold the lede
+     and the actions side by side. A phone on its side is under 699px wide and
+     has plenty of room, so it takes the two-up row back — stacked, the foot
+     alone was 129px of a 213px budget and pushed the headline off the top. */
+  .hero-foot {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    padding-top: 12px;
+    gap: 12px 24px;
+  }
+  .hero-lede { font-size: 14px; line-height: 1.45; max-width: 52ch; }
+}
+
 /* ── The panel ─────────────────────────────────────────────── */
 
 /* Pulled back up by exactly the stage's pin distance, so it starts flush under
@@ -979,9 +1029,16 @@ h1 em, h2 em {
 /* Each badge carries its own border rather than relying on a 1px gap over a
    tinted container. The badge count varies with how much is verified, so any
    leftover grid cell has to be invisible rather than a grey rectangle. */
+
+/* Every `auto-fit` track on the site is written `minmax(min(Npx, 100%), 1fr)`,
+   never `minmax(Npx, 1fr)`. A bare pixel minimum is a floor the track cannot go
+   below, so on a phone narrower than N the row is wider than its container and
+   the whole page scrolls sideways — `.areas-featured-grid` at 310px did exactly
+   that on a 320px screen. Wrapping the minimum in `min(…, 100%)` lets the last
+   track collapse to the container instead. It changes nothing above N. */
 .trust-badges {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(238px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(238px, 100%), 1fr));
   gap: 10px;
 }
 .trust-badge {
@@ -1085,7 +1142,7 @@ h1 em, h2 em {
 
 .trust-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(255px, 100%), 1fr));
   gap: 1px;
   background: var(--line-soft);
   border: 1px solid var(--line-soft);
@@ -1116,7 +1173,7 @@ h1 em, h2 em {
 
 .areas-teaser-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
   gap: 1px;
   background: var(--line-soft);
   border: 1px solid var(--line-soft);
@@ -1158,7 +1215,7 @@ h1 em, h2 em {
 .faq-teaser-grid {
   padding: 40px 0 30px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr));
   gap: 40px 46px;
 }
 .faq-teaser-grid h3 { font-size: 19px; font-weight: 600; letter-spacing: -.018em; line-height: 1.25; }
@@ -1630,7 +1687,7 @@ h1 em, h2 em {
 .related-grid {
   margin-top: 6px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
   gap: 1px;
   background: var(--line-soft);
   border: 1px solid var(--line-soft);
@@ -1674,7 +1731,7 @@ h1 em, h2 em {
 .credentials h2 { margin: 46px 0 44px; color: #fff; max-width: 16ch; }
 .credentials-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 10px;
 }
 .credential-block {
@@ -1752,7 +1809,7 @@ h1 em, h2 em {
 .areas-featured-grid {
   margin-top: 42px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(310px, 100%), 1fr));
   gap: 1px;
   background: var(--line-soft);
   border: 1px solid var(--line-soft);
@@ -1787,7 +1844,7 @@ h1 em, h2 em {
 .areas-county-grid {
   margin-top: 42px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(255px, 100%), 1fr));
   gap: 40px 46px;
 }
 .areas-county-grid h3 {
@@ -1970,6 +2027,9 @@ h1 em, h2 em {
   .standards-top,
   .cta-band-inner { grid-template-columns: 1fr; }
 
+  /* .anatomy-head stacks on this same breakpoint, but the rule has to live
+     beside its own definition further down — see the note there. */
+
   .services-heading, .trust-layout, .standards-top { gap: 26px; align-items: start; }
   .footer-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 36px 30px; }
   .service-card { grid-template-columns: 1fr; gap: 26px; }
@@ -1983,19 +2043,37 @@ h1 em, h2 em {
 @media (max-width: 900px) {
 
   /* The call bar is fixed to the bottom, so the page needs room under it. */
-  body { padding-bottom: 58px; }
+  body { padding-bottom: var(--call-bar); }
   .call-bar { display: flex; }
+
+  /* The hero is pinned and sized to fill the screen, but "the screen" here is
+     shorter than the viewport: the bar covers its last 58px. Uncounted, the
+     foot band — the lede and the request button — sat underneath it, which in
+     landscape is the entire call to action hidden behind a call to action.
+
+     In portrait this subtracts nothing, because the aspect ratio produces a
+     frame well inside the cap and the cap never binds. */
+  .hero-frame {
+    max-height: calc(100vh - var(--head) - var(--call-bar));
+    max-height: calc(100svh - var(--head) - var(--call-bar));
+  }
 
   .brand img { height: 32px; }
   .nav-phone span { display: none; }
   .nav-request { display: none; }
   .nav-actions { gap: 8px; }
+  /* Two identical outlined squares side by side read as two menus. The number
+     is the one action in the header, so it takes the action colour and the
+     hamburger keeps the outline — which is also the site's own rule, since
+     --signal exists for exactly this: call, submit, request. */
   .nav-phone {
     width: 46px; height: 46px;
     justify-content: center;
-    border: 1px solid currentColor;
+    border-radius: 50%;
+    background: var(--signal);
+    color: #fff;
   }
-
+  .nav-phone:hover { background: var(--signal-hi); color: #fff; }
 
   .services-transition-content strong { font-size: clamp(24px, 6vw, 34px); }
   .credentials h2, .page-hero h1 { max-width: none; }
@@ -2010,6 +2088,16 @@ h1 em, h2 em {
   .footer-callout-actions .button,
   .notfound-links .button,
   .cta-band-actions .button { width: 100%; justify-content: space-between; }
+  /* space-between only says anything when there are two things to separate.
+     On a button whose only child is its label — most of them — it pins the
+     text to the left of a full-width pill with a hand's width of empty space
+     after it. Those centre; the ones carrying an arrow keep the split. */
+  .footer-callout-actions .button:not(:has(> i)),
+  .notfound-links .button:not(:has(> i)),
+  .cta-band-actions .button:not(:has(> i)) {
+    justify-content: center;
+    padding-inline: 22px;
+  }
   .trust-badge { padding: 18px 20px; }
   .form-panel { padding: 30px 22px; }
   .intro-facts > div { flex-direction: column; gap: 4px; }
@@ -2319,6 +2407,25 @@ h1 em, h2 em {
 }
 .anatomy-head h2 { color: #fff; }
 .anatomy-head p { color: var(--on-dark-soft); max-width: 46ch; font-size: 16.5px; }
+
+/* Stacks with every other two-column section head. It was the one left out,
+   and the result was not a squeeze but a collision: the second column held its
+   280px minimum while the first collapsed to 40px, and a 38px display headline
+   cannot wrap inside 40px — so it overflowed its track and painted straight
+   across the paragraph. Broken at every width from 320 to 899.
+
+   The rule sits HERE, next to the base declaration, rather than in the shared
+   list in the RESPONSIVE section. That list is earlier in the file than this
+   block, so at equal specificity this declaration would win and the media
+   query would silently do nothing. Anything defined below RESPONSIVE has to
+   carry its own breakpoints. */
+@media (max-width: 1180px) {
+  .anatomy-head {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 26px;
+    align-items: start;
+  }
+}
 
 /* ── Route transition ──────────────────────────────────────── */
 
@@ -2885,7 +2992,7 @@ h1 em, h2 em {
 .sitemap-grid {
   padding-block: clamp(48px, 6vw, 82px) clamp(30px, 4vw, 50px);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(232px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(232px, 100%), 1fr));
   gap: clamp(30px, 4vw, 56px);
   align-items: start;
 }
@@ -2936,4 +3043,133 @@ h1 em, h2 em {
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   padding-top: 3px;
+}
+
+/* ============================================================
+   PHONE
+
+   Everything above this point makes the desktop layout survive a narrow
+   screen. This block is the part that is actually FOR a phone: the same
+   content, re-proportioned for a column you hold in one hand.
+
+   The measure that drove it: stacking every grid to one column made the home
+   page 22 screens tall on a 390px phone against 16 on a 1440px desktop — the
+   small screen had become the long one. Nothing here removes a section; it
+   changes the shape of the three that were paying for their layout in scroll.
+   ============================================================ */
+
+@media (max-width: 620px) {
+
+  /* ── Services: six cards, stacked ────────────────────────────
+     A 3:2 photograph at full column width is 233px of picture per card, and
+     six of them ran the section to 4.4 screens — over a fifth of the page, to
+     say six things. Turned on its side the photograph is still there and the
+     card is a scannable row: the section drops to roughly one screen, and the
+     title and its line are the first thing in the eye rather than the fourth.
+
+     Media spans both rows so the picture is as tall as whatever the text
+     needs, with no fixed height to fall out of sync with the copy. */
+  .svc-card {
+    display: grid;
+    grid-template-columns: 108px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+  .svc-card-media {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    aspect-ratio: auto;   /* the row track sets the height now */
+    height: 100%;
+    min-height: 132px;
+  }
+  .svc-card-num { padding: 6px 10px; font-size: 11.5px; }
+
+  .svc-card-body { padding: 15px 16px 2px; gap: 7px; }
+  .svc-card-body h3 { font-size: 17.5px; letter-spacing: -.02em; line-height: 1.2; }
+  .svc-card-body p { font-size: 14px; line-height: 1.5; }
+  /* The tags are the same three words the linked page opens with. In a 230px
+     column they wrap to three rows and cost more height than the description
+     they sit under, so the description keeps the space. */
+  .svc-card-tags { display: none; }
+
+  .svc-card-cta { margin: 0 16px 13px; padding-top: 11px; font-size: 13px; }
+  .svc-card-cta i { width: 26px; height: 26px; }
+
+  /* ── Footer ──────────────────────────────────────────────────
+     Three link lists in one column is 16 rows of nothing but link. The
+     contact block keeps the full width because its lines are long; the lists
+     pair up, which is what they are shaped for. */
+  .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 18px;
+  }
+  .footer-grid > div:first-child { grid-column: 1 / -1; }
+
+  /* ── Comfort plot tabs ───────────────────────────────────────
+     Three labels of very different lengths wrap ragged on flex. An explicit
+     two-up with the long one spanning is the same height, read as a block,
+     and gives each a full-height target. */
+  .comfort-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .comfort-tabs button { min-height: 44px; }
+  .comfort-tabs button:last-child { grid-column: 1 / -1; }
+
+  .trust-grid article { padding: 24px 22px 28px; }
+  .standards-list article { padding: 24px 22px 28px; }
+  /* Only the sides come in on these two. Their arrow is absolutely positioned
+     off the bottom edge, so the bottom padding is the clearance keeping it off
+     the last line of the paragraph — trim it and the two collide. */
+  .area-card { padding: 26px 22px 38px; }
+  .related-grid a { padding: 24px 20px 34px; }
+}
+
+/* The process panels are full-viewport compositions on a desktop and stacked
+   blocks below 1050. At the stacked size their 110px of top and bottom padding
+   is landing five times over — a screen and a quarter of empty ground between
+   five short pieces of copy. */
+@media (max-width: 700px) {
+  .pflow-inner { padding-block: clamp(46px, 7vh, 76px); gap: 20px; }
+  .pflow-num { font-size: clamp(40px, 11vw, 60px); }
+  .pflow-text h3 { font-size: clamp(40px, 12vw, 62px); }
+  .pflow-text p { margin-top: 14px; }
+  .pflow-details { gap: 12px; }
+}
+
+/* ── Touch targets ───────────────────────────────────────────
+   Sized by pointer rather than by width: a small window on a desktop still
+   has a mouse, and a large tablet still has a thumb. Only the controls that
+   measured under ~44px are here — everything else already cleared it. */
+@media (pointer: coarse) {
+  .hotspot { width: 40px; height: 40px; font-size: 12px; }
+  .anatomy-index button { min-height: 44px; }
+  .comfort-tabs button { min-height: 44px; }
+  .faq-item button { padding-block: 24px; }
+
+  /* Footer and legal links sit at their line box, which is 22px. The extra
+     padding is vertical only, so nothing moves horizontally. */
+  .footer-grid a,
+  .footer-legal a,
+  .legal-toc ol a,
+  .sitemap-grid li a { padding-block: 6px; }
+  .footer-grid > div { gap: 2px; }
+  .legal-toc ol { gap: 2px; }
+  .sitemap-grid ul { gap: 2px; }
+
+  /* The last two standalone controls measuring under 24px. Everything still
+     smaller than this is a link inside a sentence, which is sized by the prose
+     around it and is exempt for that reason. */
+  .crumbs a,
+  .areas-county-grid li a { padding-block: 4px; }
+}
+
+/* The drawing is held at 640px below 620 because it stops being legible any
+   narrower, so it scrolls. Fading the trailing edge is what says so — there is
+   no scrollbar on a touch device to say it instead. */
+@media (max-width: 620px) {
+  .anatomy-scroll {
+    -webkit-mask-image: linear-gradient(to right, #000 88%, rgba(0, 0, 0, .3));
+            mask-image: linear-gradient(to right, #000 88%, rgba(0, 0, 0, .3));
+  }
 }

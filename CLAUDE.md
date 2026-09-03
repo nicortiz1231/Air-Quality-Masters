@@ -83,6 +83,35 @@ under `prefers-reduced-motion`.
   tracks empty in *every* row, so leftovers show as grey rectangles. Where the
   count varies (`.trust-badges`, `.credentials-grid`), give each item its own
   border and use a normal gap instead.
+- **Every `auto-fit` track is `minmax(min(Npx, 100%), 1fr)`, never
+  `minmax(Npx, 1fr)`.** A bare pixel minimum is a floor the track cannot drop
+  below, so on a screen narrower than N the row is wider than its container and
+  the whole page scrolls sideways. `.areas-featured-grid` at 310px did exactly
+  that on a 320px phone. Above N the two are identical.
+- **The stylesheet cascades by source order, and the `RESPONSIVE` section is
+  not last.** Several component sections — the visual system, the comfort plot,
+  `.svc-grid`, `.pflow`, legal, sitemap — are defined *below* it, so at equal
+  specificity their base declarations beat a media query written up there.
+  `.anatomy-head` was in the shared stacking list and silently did nothing for
+  it; `.svc-card`'s mobile `display: grid` lost to the later `display: flex`.
+  **Anything defined below `RESPONSIVE` carries its own breakpoints, next to
+  its own base rule.** The `PHONE` block at the end of the file is last on
+  purpose — put new phone overrides there, not in the middle.
+
+**Mobile.**
+- `--call-bar` is the fixed bottom bar's real height, `env(safe-area-inset-bottom)`
+  included. The bar, the space `body` reserves under it, and the hero frame's
+  height cap all read from it. They were three separate numbers once, and the
+  bar covered the last 34px of the footer on any phone with a home indicator.
+- The hero is the one composition that can run out of room. It is sized off
+  *width*, but in landscape the binding constraint is height, and its middle row
+  is `minmax(0, 1fr)` with the headline bottom-aligned — so when the stack does
+  not fit, the overflow goes **upward** and the headline disappears behind the
+  fixed header. The `(max-height: 520px) and (orientation: landscape)` block
+  sizes the stack to the height that exists. Re-check it with
+  `.hero-word`/`.hero-foot` geometry, not screenshots, after touching the hero.
+- Touch targets are sized under `@media (pointer: coarse)`, not a width query:
+  a narrow desktop window still has a mouse and a tablet still has a thumb.
 
 **The accent colour.** `--signal` (#cf3b26) is reserved for actions only: call,
 submit, request service. Nothing decorative uses it. That is what keeps it
