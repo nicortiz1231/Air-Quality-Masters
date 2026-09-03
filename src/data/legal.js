@@ -68,7 +68,7 @@ export const privacyPolicy = {
           list: [
             "This site sets no cookies and runs no analytics or advertising trackers.",
             "The only personal information we collect is what you type into the service request form, or send us by phone or email.",
-            "We use it to respond to your request and to carry out the work. We do not sell it, rent it or add you to a marketing list.",
+            "We use it to respond to your request and to carry out the work. We do not sell it or rent it, and we only add you to a marketing list if you tick the optional marketing opt-in on the form.",
             `Service request details are kept for about ${company.dataRetentionYears} years as a service record, then deleted.`,
             "You can ask us to delete your information at any time.",
           ],
@@ -103,7 +103,8 @@ export const privacyPolicy = {
             "Meeting our legal, tax and insurance obligations.",
           ],
         },
-        "That is the complete list. We do not use your information for advertising, we do not build behavioural profiles, and we do not run automated decision-making of any kind.",
+        "Plus, only if you ticked the optional marketing opt-in on the form, sending you marketing text messages — which you can stop at any time by replying STOP.",
+        "That is the complete list. We do not build behavioural profiles, we do not run automated decision-making of any kind, and we do not advertise to you anywhere other than the texts you specifically asked for.",
       ],
     },
 
@@ -150,8 +151,15 @@ export const privacyPolicy = {
       heading: "Phone calls, texts and email",
       body: [
         "When you submit the service request form you are asking us to get in touch, and you confirm that we may contact you at the number and email address you gave us about that request. We contact you about your request — a call to confirm a time, a text when the technician is on the way, an email with a quote.",
-        "We do not run marketing text campaigns and we do not use automated dialling systems. If you would rather we used one channel and not another, say so in the description box or tell whoever calls, and we will note it on the job.",
-        "Message and data rates from your carrier may apply to texts you receive. Reply STOP to any text to stop them, or ask us directly.",
+        "The form also carries two separate text-message opt-ins, both optional and both unticked by default. Neither is needed to submit the form or to get service, and we do not treat a blank box as a yes.",
+        {
+          list: [
+            "Marketing text messages from Air Quality Masters, LLC at the number provided. Frequency may vary. Message and data rates may apply. Text HELP for assistance, reply STOP to opt out.",
+            "Non-marketing text messages about order updates, appointment reminders and similar. Message and data rates may apply.",
+          ],
+        },
+        "We only send marketing texts to people who ticked the first box. We do not use automated dialling systems, and we do not share or sell any phone number, or the consent itself, to anyone for their own marketing.",
+        "Message and data rates from your carrier may apply to texts you receive. Reply STOP to any text to stop them, reply HELP for assistance, or ask us directly. Opting out of texts does not affect your service.",
       ],
     },
 

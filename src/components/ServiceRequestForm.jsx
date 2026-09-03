@@ -55,6 +55,11 @@ const EMPTY = {
   contactPreference: "any",
   message: "",
   consent: false,
+  // A2P 10DLC / TCPA opt-ins. Both are OPTIONAL and default to false: consent
+  // that is required in order to submit is not consent, and a pre-ticked box
+  // is not an opt-in. Neither is validated for exactly that reason.
+  smsMarketing: false,
+  smsTransactional: false,
   [HONEYPOT]: "",
 };
 
@@ -93,6 +98,14 @@ function payload(v) {
     contact_preference: CONTACT_PREFERENCES.find((c) => c.value === v.contactPreference)?.label || "",
     message: v.message.trim() || "(no additional detail provided)",
     consent: "Yes — consented to be contacted about this request",
+    // Recorded either way. A "No" is evidence too: the proof a carrier or a
+    // regulator asks for is what the person chose, not merely that they opted in.
+    sms_marketing_consent: v.smsMarketing
+      ? "Yes — opted in to marketing text messages"
+      : "No — did not opt in to marketing text messages",
+    sms_transactional_consent: v.smsTransactional
+      ? "Yes — opted in to non-marketing text messages"
+      : "No — did not opt in to non-marketing text messages",
   };
 }
 
@@ -366,6 +379,38 @@ export default function ServiceRequestForm({ defaultService = "", defaultUrgency
         <small className="field-error field-error-standalone" role="alert">{errors.consent}</small>
       )}
 
+      {/* Carrier-facing SMS opt-ins, reproduced verbatim as registered for A2P
+          10DLC. Do not reword: the campaign registration is approved against
+          this exact text, and the form is the evidence it was shown. */}
+      <label className="form-consent form-consent-optional">
+        <input
+          type="checkbox" name="sms_marketing_consent" checked={values.smsMarketing}
+          onChange={set("smsMarketing")}
+        />
+        <span>
+          I consent to receive marketing text messages from {company.legalName} at the phone
+          number provided. Frequency may vary. Message &amp; data rates may apply. Text HELP for
+          assistance, reply STOP to opt out.
+        </span>
+      </label>
+
+      <label className="form-consent form-consent-optional">
+        <input
+          type="checkbox" name="sms_transactional_consent" checked={values.smsTransactional}
+          onChange={set("smsTransactional")}
+        />
+        <span>
+          I consent to receive non-marketing text messages from {company.name} about my order
+          updates, appointment reminders etc. Message &amp; data rates may apply.
+        </span>
+      </label>
+
+      <p className="form-consent-links">
+        <Link to="/privacy">Privacy Policy</Link>
+        <span aria-hidden="true">|</span>
+        <Link to="/terms">Terms of Service</Link>
+      </p>
+
       {status === "error" && (
         <p className="form-error-banner" role="alert">
           <AlertCircle size={16} aria-hidden="true" />
@@ -384,8 +429,9 @@ export default function ServiceRequestForm({ defaultService = "", defaultUrgency
 
       <p className="form-fineprint">
         Sending this is a request for us to get in touch — it is not a confirmed booking until we
-        speak. We use your details to respond to this request only. No marketing lists, no third
-        parties. <Link to="/privacy">How we handle your information →</Link>
+        speak. We use your details to respond to this request, and for nothing else unless you
+        ticked one of the optional text-message boxes above. No third parties either way.{" "}
+        <Link to="/privacy">How we handle your information →</Link>
       </p>
     </form>
   );

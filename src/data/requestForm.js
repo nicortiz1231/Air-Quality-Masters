@@ -30,6 +30,8 @@ export const FIELDS = [
   "contact_preference",
   "message",
   "consent",
+  "sms_marketing_consent",
+  "sms_transactional_consent",
 ];
 
 export const PROPERTY_TYPES = ["Residential", "Commercial"];
